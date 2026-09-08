@@ -1,15 +1,480 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum UserStatus {
+  active
+  suspended
+  pending_review
+}
+
+// Confirmed 7-step flow (Component Spec + Backend Design Document QA note),
+// supersedes the older enum still shown in Content Brief §5. Mirrors
+// packages/shared's ShipmentStatus — keep both in sync.
+enum ShipmentStatus {
+  received_from_china
+  in_transit
+  arrived_lao_warehouse
+  arrived_branch
+  priced_awaiting_payment
+  paid_awaiting_pickup
+  delivered
+}
+
+enum PointsSource {
+  transport
+  referral
+  redemption
+  expiry_reset
+}
+
+enum PointsStatus {
+  locked
+  unlocked
+}
+
+enum OtpPurpose {
+  register
+  login
+  reset_password
+  change_phone
+}
+
+enum ReferralStatus {
+  pending
+  unlocked
+  flagged
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  hidden
+}
+
+// Admin/Staff auth is fully separate from customer auth (§6 of the Backend
+// Design Document) — phone+password, no public signup, accounts created
+// only via /admin/staff.
+enum StaffRole {
+  admin
+  staff
+}
+
+enum StaffStatus {
+  active
+  suspended
+}
+
+// ============================================================
+// Config
+// ============================================================
+
+// Every magic number (points rate, discount cap, referral bonuses, expiry
+// date) is read from here at runtime — never hardcoded — so admin changes
+// take effect without a redeploy. Seed keys match §2 "Config Keys".
+model SystemConfig {
+  configKey   String    @id @map("config_key")
+  configValue String    @map("config_value")
+  description String?
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedById String?   @map("updated_by")
+  updatedBy   Staff?    @relation(fields: [updatedById], references: [id])
+
+  @@map("system_config")
+}
+
+// ============================================================
+// Customers
+// ============================================================
+
+model User {
+  id                    String     @id @default(uuid())
+  accountId             String     @unique @map("account_id")
+  phone                 String     @unique
+  email                 String?
+  passwordHash          String?    @map("password_hash")
+  fullName              String?    @map("full_name")
+  status                UserStatus @default(active)
+  deviceFingerprintHash String?    @map("device_fingerprint_hash")
+  createdAt             DateTime   @default(now()) @map("created_at")
+  lastLoginAt           DateTime?  @map("last_login_at")
+
+  shipments           Shipment[]
+  pointsLedger        PointsLedger[]
+  referralsAsReferrer Referral[]        @relation("ReferrerReferrals")
+  referralAsReferee   Referral?         @relation("RefereeReferrals")
+  fraudFlags          FraudFlag[]
+  contactMessages     ContactMessage[]
+  notificationLogs    NotificationLog[]
+  reviews             Review[]
+
+  @@map("users")
+}
+
+// Not in the original ER diagram — backs customer OTP login/register/reset
+// and (later, Step 7) admin phone-change. Code is stored hashed; the
+// mock SMS provider echoes the plaintext to server logs (and, only when
+// SMS_PROVIDER=mock, in the API response) for local dev.
+model Otp {
+  id         String     @id @default(uuid())
+  phone      String
+  purpose    OtpPurpose
+  codeHash   String     @map("code_hash")
+  attempts   Int        @default(0)
+  expiresAt  DateTime   @map("expires_at")
+  consumedAt DateTime?  @map("consumed_at")
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  @@index([phone, purpose])
+  @@map("otps")
+}
+
+// ============================================================
+// Shipments / Tracking
+// ============================================================
+
+model Shipment {
+  id                String         @id @default(uuid())
+  billNumber        String         @unique @map("bill_number")
+  userId            String         @map("user_id")
+  user              User           @relation(fields: [userId], references: [id])
+  origin            String?
+  destination       String?
+  weightKg          Decimal?       @map("weight_kg") @db.Decimal(8, 2)
+  productType       String?        @map("product_type")
+  price             Decimal?       @db.Decimal(10, 2)
+  status            ShipmentStatus @default(received_from_china)
+  receivedDate      DateTime?      @map("received_date") @db.Date
+  estimatedDelivery DateTime?      @map("estimated_delivery") @db.Date
+  actualDelivery    DateTime?      @map("actual_delivery") @db.Date
+  // Not in the original ER diagram — added for Content Brief §10's admin
+  // shipment table column "พนักงานผู้รับผิดชอบ" (responsible staff member).
+  assignedStaffId   String?        @map("assigned_staff_id")
+  assignedStaff     Staff?         @relation(fields: [assignedStaffId], references: [id])
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  trackingHistory ShipmentTrackingHistory[]
+  pointsLedger    PointsLedger[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("shipments")
+}
+
+model ShipmentTrackingHistory {
+  id          String         @id @default(uuid())
+  shipmentId  String         @map("shipment_id")
+  shipment    Shipment       @relation(fields: [shipmentId], references: [id])
+  status      ShipmentStatus
+  location    String?
+  note        String?
+  changedAt   DateTime       @default(now()) @map("changed_at")
+  // Design doc says "FK → users (staff)" — redirected to the Staff model
+  // per the later, confirmed decision that admin/staff auth is fully
+  // separate from customer users.
+  changedById String?        @map("changed_by")
+  changedBy   Staff?         @relation(fields: [changedById], references: [id])
+
+  @@index([shipmentId])
+  @@map("shipment_tracking_history")
+}
+
+// ============================================================
+// Loyalty points / Referral
+// ============================================================
+
+model PointsLedger {
+  id         String        @id @default(uuid())
+  userId     String        @map("user_id")
+  user       User          @relation(fields: [userId], references: [id])
+  shipmentId String?       @map("shipment_id")
+  shipment   Shipment?     @relation(fields: [shipmentId], references: [id])
+  // "reference_id" in the design doc — named referralId here since today
+  // it only ever points at a Referral (source='referral').
+  referralId String?       @map("reference_id")
+  referral   Referral?     @relation(fields: [referralId], references: [id])
+  delta      Int
+  source     PointsSource
+  status     PointsStatus
+  expiresAt  DateTime?     @map("expires_at") @db.Date
+  note       String?
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  @@index([userId, status])
+  @@map("points_ledger")
+}
+
+model Referral {
+  id                      String         @id @default(uuid())
+  referrerId              String         @map("referrer_id")
+  referrer                User           @relation("ReferrerReferrals", fields: [referrerId], references: [id])
+  refereeId               String         @unique @map("referee_id")
+  referee                 User           @relation("RefereeReferrals", fields: [refereeId], references: [id])
+  linkedAt                DateTime       @default(now()) @map("linked_at")
+  referrerBonusCreditedAt DateTime?      @map("referrer_bonus_credited_at")
+  refereeUnlockAt         DateTime?      @map("referee_unlock_at")
+  cumulativeKg            Decimal        @default(0) @db.Decimal(8, 2) @map("cumulative_kg")
+  status                  ReferralStatus @default(pending)
+  fraudFlag               Boolean        @default(false) @map("fraud_flag")
+  fraudReason             String?        @map("fraud_reason")
+  reviewedById            String?        @map("reviewed_by")
+  reviewedBy              Staff?         @relation(fields: [reviewedById], references: [id])
+  reviewedAt              DateTime?      @map("reviewed_at")
+
+  pointsLedgerEntries PointsLedger[]
+
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+model FraudFlag {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  user         User      @relation(fields: [userId], references: [id])
+  reason       String
+  detectedAt   DateTime  @default(now()) @map("detected_at")
+  reviewed     Boolean   @default(false)
+  reviewedById String?   @map("reviewed_by")
+  reviewedBy   Staff?    @relation(fields: [reviewedById], references: [id])
+  reviewedAt   DateTime? @map("reviewed_at")
+
+  @@map("fraud_flags")
+}
+
+// ============================================================
+// Admin / Staff accounts
+// ============================================================
+
+model Staff {
+  id              String      @id @default(uuid())
+  fullName        String      @map("full_name")
+  phone           String      @unique
+  passwordHash    String      @map("password_hash")
+  // Set true for the seeded first-admin (and any account reset by another
+  // admin) — protected routes reject everything except the password-change
+  // endpoint until this is cleared, per the confirmed "force change on
+  // first login" flow.
+  isTempPassword  Boolean     @default(false) @map("is_temp_password")
+  role            StaffRole   @default(staff)
+  status          StaffStatus @default(active)
+  createdAt       DateTime    @default(now()) @map("created_at")
+  lastLoginAt     DateTime?   @map("last_login_at")
+
+  assignedShipments     Shipment[]
+  trackingChanges       ShipmentTrackingHistory[]
+  reviewedReferrals     Referral[]
+  reviewedFraudFlags    FraudFlag[]
+  resetLogEntries       StaffResetLog[]           @relation("ResetLogTarget")
+  resetLogActions       StaffResetLog[]           @relation("ResetLogActor")
+  configUpdates         SystemConfig[]
+  newsUpdates           NewsArticle[]
+  faqUpdates            FaqItem[]
+  reviewUpdates         Review[]
+  teamUpdates           TeamMember[]
+  rateUpdates           ShippingRate[]
+  notificationTemplates NotificationTemplate[]
+
+  @@map("staff")
+}
+
+model StaffResetLog {
+  id            String   @id @default(uuid())
+  staffId       String   @map("staff_id")
+  staff         Staff    @relation("ResetLogTarget", fields: [staffId], references: [id])
+  action        String
+  performedById String   @map("performed_by")
+  performedBy   Staff    @relation("ResetLogActor", fields: [performedById], references: [id])
+  note          String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("staff_reset_log")
+}
+
+// ============================================================
+// CMS — content every table is soft-deleted per §6 "Soft delete"
+// ============================================================
+
+model NewsCategory {
+  id       String        @id @default(uuid())
+  key      String        @unique
+  nameLo   String        @map("name_lo")
+  nameZh   String        @map("name_zh")
+  nameEn   String        @map("name_en")
+  articles NewsArticle[]
+
+  @@map("news_categories")
+}
+
+model NewsArticle {
+  id            String       @id @default(uuid())
+  categoryId    String       @map("category_id")
+  category      NewsCategory @relation(fields: [categoryId], references: [id])
+  titleLo       String       @map("title_lo")
+  titleZh       String       @map("title_zh")
+  titleEn       String       @map("title_en")
+  bodyLo        String       @map("body_lo")
+  bodyZh        String       @map("body_zh")
+  bodyEn        String       @map("body_en")
+  coverImageUrl String?      @map("cover_image_url")
+  isPublished   Boolean      @default(true) @map("is_published")
+  publishedAt   DateTime?    @map("published_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedById   String?      @map("updated_by")
+  updatedBy     Staff?       @relation(fields: [updatedById], references: [id])
+  deletedAt     DateTime?    @map("deleted_at")
+
+  @@index([categoryId])
+  @@map("news_articles")
+}
+
+model FaqCategory {
+  id        String    @id @default(uuid())
+  key       String    @unique
+  nameLo    String    @map("name_lo")
+  nameZh    String    @map("name_zh")
+  nameEn    String    @map("name_en")
+  sortOrder Int       @default(0) @map("sort_order")
+  items     FaqItem[]
+
+  @@map("faq_categories")
+}
+
+model FaqItem {
+  id          String      @id @default(uuid())
+  categoryId  String      @map("category_id")
+  category    FaqCategory @relation(fields: [categoryId], references: [id])
+  questionLo  String      @map("question_lo")
+  questionZh  String      @map("question_zh")
+  questionEn  String      @map("question_en")
+  answerLo    String      @map("answer_lo")
+  answerZh    String      @map("answer_zh")
+  answerEn    String      @map("answer_en")
+  isPublished Boolean     @default(true) @map("is_published")
+  // Content Brief §0.3 — Lao copy needs native-speaker QA before it's final.
+  needsReview Boolean     @default(false) @map("needs_review")
+  sortOrder   Int         @default(0) @map("sort_order")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  updatedById String?     @map("updated_by")
+  updatedBy   Staff?      @relation(fields: [updatedById], references: [id])
+  deletedAt   DateTime?   @map("deleted_at")
+
+  @@index([categoryId])
+  @@map("faq_items")
+}
+
+model Review {
+  id          String       @id @default(uuid())
+  authorName  String       @map("author_name")
+  userId      String?      @map("user_id")
+  user        User?        @relation(fields: [userId], references: [id])
+  stars       Int
+  quoteLo     String?      @map("quote_lo")
+  quoteZh     String?      @map("quote_zh")
+  quoteEn     String?      @map("quote_en")
+  status      ReviewStatus @default(pending)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedById String?      @map("updated_by")
+  updatedBy   Staff?       @relation(fields: [updatedById], references: [id])
+  deletedAt   DateTime?    @map("deleted_at")
+
+  @@map("reviews")
+}
+
+model TeamMember {
+  id        String    @id @default(uuid())
+  nameLo    String    @map("name_lo")
+  nameZh    String    @map("name_zh")
+  nameEn    String    @map("name_en")
+  roleLo    String    @map("role_lo")
+  roleZh    String    @map("role_zh")
+  roleEn    String    @map("role_en")
+  photoUrl  String?   @map("photo_url")
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  updatedById String? @map("updated_by")
+  updatedBy Staff?    @relation(fields: [updatedById], references: [id])
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("team_members")
+}
+
+// Rate table shown on Home/Services — read-only for customers, editable by
+// admin (§10 Admin Dashboard "RatesPage"). Seeded from Content Brief §4.
+model ShippingRate {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  nameLo      String    @map("name_lo")
+  nameZh      String    @map("name_zh")
+  nameEn      String    @map("name_en")
+  price       Decimal   @db.Decimal(12, 2)
+  currency    String
+  unit        String
+  sortOrder   Int       @default(0) @map("sort_order")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedById String?   @map("updated_by")
+  updatedBy   Staff?    @relation(fields: [updatedById], references: [id])
+
+  @@map("shipping_rates")
+}
+
+// ============================================================
+// Contact / Notifications
+// ============================================================
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  subject   String?
+  message   String
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id])
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+// 10 templates per §5 — keyed by the notif_* constants in that table.
+model NotificationTemplate {
+  id           String   @id @default(uuid())
+  templateKey  String   @unique @map("template_key")
+  title        String
+  bodyWeb      String   @map("body_web")
+  bodyWhatsapp String   @map("body_whatsapp")
+  isActive     Boolean  @default(true) @map("is_active")
+  updatedById  String?  @map("updated_by")
+  updatedBy    Staff?   @relation(fields: [updatedById], references: [id])
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("notification_templates")
+}
+
+// Per-customer notification feed — backs the "การแจ้งเตือน" menu item in
+// Content Brief §9 (not explicitly modeled in the original ER diagram).
+model NotificationLog {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id])
+  templateKey String    @map("template_key")
+  channel     String
+  payload     Json?
+  sentAt      DateTime  @default(now()) @map("sent_at")
+  readAt      DateTime? @map("read_at")
+
+  @@index([userId])
+  @@map("notification_logs")
 }

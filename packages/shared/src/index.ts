@@ -16,3 +16,10 @@ export const SHIPMENT_STATUS = [
   "delivered",
 ] as const;
 export type ShipmentStatus = (typeof SHIPMENT_STATUS)[number];
+
+// Strips everything but digits so "020 5469 9236" and "02054699236" look up
+// the same row — used by seed, register, and login alike so the stored
+// phone and the lookup phone never silently diverge.
+export function normalizePhone(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
