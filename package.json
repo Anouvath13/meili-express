@@ -1,0 +1,17 @@
+{
+  "name": "meili-express",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @meili/web",
+    "dev:api": "npm run dev -w @meili/api",
+    "build:web": "npm run build -w @meili/web",
+    "build:api": "npm run build -w @meili/api",
+    "prisma:generate": "npm run prisma:generate -w @meili/api",
+    "prisma:migrate": "npm run prisma:migrate -w @meili/api"
+  }
+}

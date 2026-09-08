@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Lao:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Brand orange gradient scale — matches Claude Design mockups */
+  --color-brand-50: #fff3eb;
+  --color-brand-100: #fff1e8;
+  --color-brand-200: #ffe4d3;
+  --color-brand-300: #ffb081;
+  --color-brand-400: #ff8a3d;
+  --color-brand-500: #ff6a14;
+  --color-brand-600: #ec5709;
+  --color-brand-700: #e4530a;
+  --color-brand-800: #c2470a;
+  --color-brand-900: #a8611e;
+
+  /* Neutral ink scale */
+  --color-ink-900: #101114;
+  --color-ink-700: #3a3c42;
+  --color-ink-500: #6b6d73;
+  --color-ink-400: #8a8c92;
+  --color-ink-300: #9a9ca2;
+  --color-ink-200: #c9cacd;
+  --color-ink-100: #ececee;
+  --color-ink-50: #f2f2f4;
+
+  /* Status colors */
+  --color-success-bg: #ecfdf3;
+  --color-success-text: #027a48;
+  --color-error-bg: #fffbfa;
+  --color-error-border: #f97066;
+  --color-error-text: #b42318;
+
+  --font-sans: 'Space Grotesk', 'Noto Sans Lao', 'Noto Sans SC', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-card: 20px;
+  --radius-card-lg: 24px;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink-50);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: var(--color-brand-500);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-brand-600);
+}
+
+input,
+textarea,
+button,
+select {
+  font-family: inherit;
+}
