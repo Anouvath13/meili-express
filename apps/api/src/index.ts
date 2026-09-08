@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { AppError } from "./lib/errors.js";
 import { adminAuthRouter } from "./routes/auth.admin.js";
 import { customerAuthRouter } from "./routes/auth.customer.js";
+import { publicRouter } from "./routes/public.js";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
@@ -18,6 +19,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", customerAuthRouter);
 app.use("/api/admin", adminAuthRouter);
+app.use("/api", publicRouter);
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof ZodError) {

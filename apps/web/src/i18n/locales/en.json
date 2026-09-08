@@ -1,0 +1,86 @@
+{
+  "nav": { "home": "Home", "about": "About", "services": "Services", "tracking": "Tracking", "news": "News", "faq": "FAQ", "contact": "Contact" },
+  "cta": { "primary": "Contact us now", "secondary": "See starting rates" },
+  "hero": {
+    "badge": "China–Laos freight",
+    "title": "MEILI EXPRESS — China–Laos freight, simple to order and quick to arrive",
+    "subtitle": "MEILI EXPRESS — fast delivery, safe at every stage",
+    "stats": [
+      { "value": "19,000 ₭", "label": "Starting rate / kg" },
+      { "value": "7", "label": "Shipment status stages" },
+      { "value": "1 kg = 1", "label": "Reward point" }
+    ]
+  },
+  "points": {
+    "kicker": "REWARD POINTS",
+    "title": "MEILI EXPRESS — fast delivery, safe at every stage",
+    "body": "1 kg (19,000 ₭) = 1 point · minimum 3 kg · 1 point = 100 ₭ · redeem up to 15% of an invoice · points reset every 31 December",
+    "cta": "View my points"
+  },
+  "promo": "Ship with MEILI EXPRESS today for free advice on ordering, and earn points toward a discount on your next shipment.",
+  "features": {
+    "kicker": "WHY MEILI",
+    "title": "China–Laos freight with a visible status at every stage",
+    "items": [
+      { "title": "Container-truck freight", "body": "Specialised in the China–Laos route, safe the whole way" },
+      { "title": "Border-crossing expertise", "body": "Familiar with customs rules and paperwork" },
+      { "title": "Two-layer tracking", "body": "Our own system, plus a direct link to a major Chinese carrier's system" },
+      { "title": "Reward points", "body": "1 kg = 1 point, minimum 3 kg · redeem up to 15% of an invoice" }
+    ]
+  },
+  "rates": {
+    "kicker": "RATES",
+    "title": "Starting rates",
+    "note": "Prices shown are starting rates for reference only. The real price is set by staff after the shipment reaches the Laos warehouse and is weighed/measured.",
+    "colService": "Cargo type", "colUnit": "Unit", "colPrice": "From"
+  },
+  "reviews": { "kicker": "REVIEWS", "title": "Customer reviews" },
+  "news": {
+    "kicker": "NEWS", "title": "News", "all": "View all →", "backToNews": "← Back to news",
+    "categoryAll": "All",
+    "categories": { "company": "Company news", "logistics": "Logistics news", "border": "Border crossing news", "china_holiday": "China holidays", "import_tax": "Import tax" }
+  },
+  "about": {
+    "kicker": "ABOUT", "title": "MEILI EXPRESS (ເຫມີຍລີ່ເອັກຊ໌ເປຣສ໌)",
+    "intro": "MEILI EXPRESS is a China–Laos international freight company operating exclusively by container truck. We work hard and serve every customer well, aiming to become one of the best China–Laos freight providers in the country.",
+    "p1": "China–Laos freight service · Warehouse: Ban Fai, Saysettha District, Vientiane Capital",
+    "p2": "System administrator: ນາງ ໄຂ່ມຸກ ຖາວົງ · Phone / WhatsApp: 020 54699236, 020 29992618 · Email: Khaimoukthavong05@Gmail.com",
+    "visionTitle": "Vision", "vision": "To be one of the best China–Laos freight providers in the country, with transparency, speed, and safety at every step.",
+    "missionTitle": "Mission",
+    "mission": ["On-time, safe delivery", "Keep improving a transparent tracking system", "Build trust with accessible pricing"],
+    "teamTitle": "Team"
+  },
+  "services": {
+    "kicker": "SERVICES", "title": "Cargo types and starting rates",
+    "desc": "Container-truck freight dedicated to the China–Laos route — from pickup in China, across the border, to the destination warehouse in Vientiane."
+  },
+  "tracking": {
+    "kicker": "TRACKING", "title": "Track your shipment with a Lao waybill number",
+    "subtitle": "Enter the Lao waybill number we issued, or connect to the Chinese carrier's own system.",
+    "placeholder": "Lao waybill number", "button": "Track",
+    "connect": "Connect Chinese carrier",
+    "errorMsg": "We could not find that number. Please check it or contact us.",
+    "statusLabel": "Current status",
+    "weight": "Weight", "price": "Price", "estDelivery": "Estimated arrival",
+    "steps": ["Received from China", "In transit", "Arrived at Laos warehouse", "Arrived at branch", "Priced, awaiting payment", "Paid, awaiting pickup", "Delivery completed"]
+  },
+  "faq": { "kicker": "FAQ", "title": "Frequently asked questions", "categoryAll": "All" },
+  "contact": {
+    "kicker": "CONTACT", "title": "Contact us",
+    "rows": [
+      { "label": "Warehouse", "value": "Ban Fai, Saysettha District, Vientiane Capital" },
+      { "label": "Phone / WhatsApp", "value": "020 54699236, 020 29992618" },
+      { "label": "Email", "value": "Khaimoukthavong05@Gmail.com" },
+      { "label": "Facebook", "value": "MEILI ຂົນສົ່ງຈີນ-ລາວ" },
+      { "label": "WeChat ID", "value": "mouk912, basictshirt" },
+      { "label": "System administrator", "value": "ນາງ ໄຂ່ມຸກ ຖາວົງ" }
+    ],
+    "mapLabel": "Open Google Maps",
+    "form": {
+      "title": "Send us a message", "name": "Your name", "phone": "Phone number", "subject": "Subject", "message": "Message",
+      "send": "Send message", "sent": "Message sent, thank you", "required": "This field is required"
+    }
+  },
+  "footer": { "tagline": "MEILI EXPRESS — fast delivery, safe at every stage", "copyright": "© 2026 MEILI EXPRESS" },
+  "common": { "loading": "Loading...", "error": "Something went wrong, please try again", "empty": "Nothing here yet" }
+}

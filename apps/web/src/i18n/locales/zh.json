@@ -1,0 +1,86 @@
+{
+  "nav": { "home": "首页", "about": "关于我们", "services": "服务", "tracking": "包裹追踪", "news": "新闻", "faq": "常见问题", "contact": "联系我们" },
+  "cta": { "primary": "立即联系", "secondary": "查看起运价格" },
+  "hero": {
+    "badge": "中老跨境物流",
+    "title": "美丽快运 · 中老物流 下单简单 快速送达",
+    "subtitle": "美丽快运 · 快速送达 全程安全",
+    "stats": [
+      { "value": "19,000 ₭", "label": "起运价 / 公斤" },
+      { "value": "7", "label": "物流状态节点" },
+      { "value": "1 公斤 = 1", "label": "积分" }
+    ]
+  },
+  "points": {
+    "kicker": "积分奖励",
+    "title": "美丽快运 · 快速送达 全程安全",
+    "body": "1 公斤（19,000 ₭）= 1 积分 · 满 3 公斤起算 · 1 积分 = 100 ₭ · 最高抵扣单票 15% · 每年 12 月 31 日清零",
+    "cta": "查看我的积分"
+  },
+  "promo": "今天就与美丽快运一起发货，免费咨询订购事宜，还能积累积分抵扣下次运费。",
+  "features": {
+    "kicker": "服务优势",
+    "title": "中老物流，全程状态可查",
+    "items": [
+      { "title": "集装箱卡车运输", "body": "专注中老线路，全程安全护航" },
+      { "title": "熟悉边境口岸", "body": "熟悉通关规定与所需文件" },
+      { "title": "双重包裹追踪", "body": "自有系统，并直连中国大型物流系统" },
+      { "title": "积分奖励", "body": "1 公斤 = 1 积分，满 3 公斤起算 · 最高抵扣单票 15%" }
+    ]
+  },
+  "rates": {
+    "kicker": "运费价格",
+    "title": "起运价格表",
+    "note": "以下价格仅为起运参考价，实际价格由工作人员在货物到达老挝仓库并完成称重/测量后核定。",
+    "colService": "货物类型", "colUnit": "单位", "colPrice": "起运价"
+  },
+  "reviews": { "kicker": "客户评价", "title": "客户评价" },
+  "news": {
+    "kicker": "新闻", "title": "新闻", "all": "查看全部 →", "backToNews": "← 返回新闻",
+    "categoryAll": "全部",
+    "categories": { "company": "公司新闻", "logistics": "物流新闻", "border": "边境口岸新闻", "china_holiday": "中国假期", "import_tax": "进口关税" }
+  },
+  "about": {
+    "kicker": "关于我们", "title": "MEILI EXPRESS（美丽快运）",
+    "intro": "MEILI EXPRESS（美丽快运）是一家专注中老两国货运的集装箱卡车运输公司。我们用心工作、悉心服务每一位客户，致力成为老挝最优秀的中老物流服务商之一。",
+    "p1": "中老跨境货运服务 · 仓库：老挝万象赛色塔县板法村",
+    "p2": "系统管理员：ນາງ ໄຂ່ມຸກ ຖາວົງ · 电话 / WhatsApp：020 54699236, 020 29992618 · 邮箱：Khaimoukthavong05@Gmail.com",
+    "visionTitle": "愿景", "vision": "成为老挝最优秀的中老货运服务商之一，以透明、快速、安全贯穿每个环节。",
+    "missionTitle": "使命",
+    "mission": ["准时安全运输", "持续优化透明的追踪系统", "以亲民价格建立客户信任"],
+    "teamTitle": "团队"
+  },
+  "services": {
+    "kicker": "服务", "title": "货物类型与起运价格",
+    "desc": "专注中老线路的集装箱卡车运输，覆盖从中国起运、跨境运输，直至老挝万象仓库交接的全流程。"
+  },
+  "tracking": {
+    "kicker": "包裹追踪", "title": "用老挝单号追踪包裹",
+    "subtitle": "输入我们提供的老挝单号，或连接中国物流系统查询。",
+    "placeholder": "老挝单号", "button": "查询",
+    "connect": "连接中国物流系统",
+    "errorMsg": "未找到该单号，请核对后重试或联系我们。",
+    "statusLabel": "当前状态",
+    "weight": "重量", "price": "价格", "estDelivery": "预计到达",
+    "steps": ["已从中国收货", "运输中", "已到达老挝仓库", "已到达网点", "已计价，待付款", "已付款，待提货", "货物交付完成"]
+  },
+  "faq": { "kicker": "常见问题", "title": "常见问题", "categoryAll": "全部" },
+  "contact": {
+    "kicker": "联系我们", "title": "联系我们",
+    "rows": [
+      { "label": "仓库", "value": "老挝万象赛色塔县板法村" },
+      { "label": "电话 / WhatsApp", "value": "020 54699236, 020 29992618" },
+      { "label": "邮箱", "value": "Khaimoukthavong05@Gmail.com" },
+      { "label": "Facebook", "value": "MEILI ຂົນສົ່ງຈີນ-ລາວ" },
+      { "label": "微信 ID", "value": "mouk912, basictshirt" },
+      { "label": "系统管理员", "value": "ນາງ ໄຂ່ມຸກ ຖາວົງ" }
+    ],
+    "mapLabel": "打开 Google Maps",
+    "form": {
+      "title": "给我们留言", "name": "您的姓名", "phone": "联系电话", "subject": "主题", "message": "留言内容",
+      "send": "发送留言", "sent": "留言已发送，谢谢", "required": "请填写此项"
+    }
+  },
+  "footer": { "tagline": "美丽快运 · 快速送达 全程安全", "copyright": "© 2026 MEILI EXPRESS" },
+  "common": { "loading": "正在加载...", "error": "发生错误，请重试", "empty": "暂无数据" }
+}

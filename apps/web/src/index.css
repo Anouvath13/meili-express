@@ -38,24 +38,59 @@
   --radius-card-lg: 24px;
 }
 
-body {
-  margin: 0;
-  background: var(--color-ink-50);
-  font-family: var(--font-sans);
+/* Unlayered CSS always beats Tailwind's `@layer utilities` regardless of
+   source order — these base-element tweaks must live in `@layer base` or
+   they'd permanently win over e.g. `text-white` on any <a>. */
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-ink-50);
+    font-family: var(--font-sans);
+  }
+
+  a {
+    color: var(--color-brand-500);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-brand-600);
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    font-family: inherit;
+  }
 }
 
-a {
-  color: var(--color-brand-500);
-  text-decoration: none;
+@utility bg-gradient-brand {
+  background-image: linear-gradient(140deg, #ff8a3d 0%, #ff6a14 55%, #ec5709 100%);
 }
 
-a:hover {
-  color: var(--color-brand-600);
+@utility bg-gradient-hero {
+  background-image: linear-gradient(135deg, #e4530a 0%, #ff6a14 46%, #ff9245 100%);
 }
 
-input,
-textarea,
-button,
-select {
-  font-family: inherit;
+@utility bg-gradient-news {
+  background-image: linear-gradient(150deg, #fff3eb 0%, #ffe4d3 100%);
+}
+
+@utility shadow-card {
+  box-shadow:
+    0 2px 4px rgba(16, 17, 20, 0.03),
+    0 20px 44px -22px rgba(180, 90, 40, 0.3);
+}
+
+@utility shadow-card-lg {
+  box-shadow:
+    0 2px 4px rgba(16, 17, 20, 0.03),
+    0 22px 48px -22px rgba(180, 90, 40, 0.32);
+}
+
+@utility shadow-brand-btn {
+  box-shadow:
+    0 10px 22px -8px rgba(255, 106, 20, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
