@@ -1,6 +1,8 @@
 import "dotenv/config";
 import cors from "cors";
 import express, { type ErrorRequestHandler } from "express";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
 import cron from "node-cron";
 import { ZodError } from "zod";
 import { AppError } from "./lib/errors.js";
@@ -20,6 +22,13 @@ import { publicRouter } from "./routes/public.js";
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
+// Render (and most PaaS hosts) sit behind a reverse proxy — without this,
+// express-rate-limit and req.ip both see the proxy's IP instead of the
+// client's, so every request gets bucketed together.
+app.set("trust proxy", 1);
+
+app.use(helmet());
+
 // CORS_ORIGIN is a comma-separated allowlist (set in production to the
 // deployed web app's URL). Unset in dev, which falls back to reflecting any
 // origin so localhost works without config.
@@ -30,6 +39,29 @@ const allowedOrigins = (process.env.CORS_ORIGIN ?? "")
 app.use(cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : true }));
 app.use(express.json());
 
+// General abuse safety net across the whole API...
+app.use(
+  rateLimit({
+    windowMs: 15 * 60_000,
+    limit: 600,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
+
+// ...and a much tighter one specifically for the auth surface (login, OTP
+// send/verify, register, password reset) — these are the endpoints a
+// brute-force or OTP-spam attempt would actually hit.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "พยายามมากเกินไป กรุณาลองใหม่ในอีกสักครู่", code: "rate_limited" },
+});
+customerAuthRouter.use(authLimiter);
+adminAuthRouter.use(authLimiter);
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "meili-express-api" });
 });
@@ -37,7 +69,10 @@ app.get("/api/health", (_req, res) => {
 // Every router below applies its own auth middleware per-route (never as a
 // blanket `router.use(...)`) — see customer.ts's comment for why: a
 // router-wide auth guard swallows sibling routers' unauthenticated routes
-// too when mount prefixes overlap, regardless of registration order.
+// too when mount prefixes overlap, regardless of registration order. (The
+// authLimiter above is exempt from that rule — a rate limiter that isn't
+// tripped calls next() normally, so it can't swallow a sibling router the
+// way an auth failure's next(err) does.)
 app.use("/api/auth", customerAuthRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin", adminAccountRouter);

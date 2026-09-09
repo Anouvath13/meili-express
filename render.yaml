@@ -24,6 +24,25 @@ services:
       - key: JWT_ADMIN_SECRET
         generateValue: true
       - key: SMS_PROVIDER
-        value: mock
-      - key: CORS_ORIGIN
+        value: twilio
+      - key: TWILIO_ACCOUNT_SID
         sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://meili-express-web.onrender.com
+
+  - type: web
+    name: meili-express-web
+    runtime: static
+    buildCommand: npm install && npm run build -w @meili/shared && npm run build -w @meili/web
+    staticPublishPath: apps/web/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://meili-express-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
