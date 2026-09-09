@@ -2,6 +2,9 @@ import { Route, Routes } from 'react-router-dom'
 import { PublicLayout } from './components/layout/PublicLayout'
 import { CustomerShell } from './components/customer/CustomerShell'
 import { ProtectedRoute } from './components/customer/ProtectedRoute'
+import { AdminShell } from './components/admin/AdminShell'
+import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute'
+import { AdminOnlyGuard } from './components/admin/AdminOnlyGuard'
 import AboutPage from './pages/public/AboutPage'
 import ContactPage from './pages/public/ContactPage'
 import FaqPage from './pages/public/FaqPage'
@@ -21,12 +24,23 @@ import PointsPage from './pages/customer/app/PointsPage'
 import ProfilePage from './pages/customer/app/ProfilePage'
 import ReferralPage from './pages/customer/app/ReferralPage'
 import CustomerTrackingPage from './pages/customer/app/TrackingPage'
+import AdminLoginPage from './pages/admin/LoginPage'
+import AdminDashboardPage from './pages/admin/DashboardPage'
+import AdminBillsPage from './pages/admin/BillsPage'
+import AdminRatesPage from './pages/admin/RatesPage'
+import AdminPointsConfigPage from './pages/admin/PointsConfigPage'
+import AdminReferralPage from './pages/admin/ReferralPage'
+import AdminNewsPage from './pages/admin/NewsPage'
+import AdminFaqPage from './pages/admin/FaqPage'
+import AdminReviewsPage from './pages/admin/ReviewsPage'
+import AdminNotifPage from './pages/admin/NotifPage'
+import AdminStaffPage from './pages/admin/StaffPage'
+import AdminAccountPage from './pages/admin/AccountPage'
 
 // Route groups mirror the Component Spec batches:
 //   /          Batch 1 — Public Pages
 //   /app/*     Batch 2 — Customer Zone (auth-gated)
 //   /admin/*   Batch 3 — Admin Console (staff/admin-gated)
-// Each batch replaces its placeholder as it's built.
 export default function App() {
   return (
     <Routes>
@@ -55,6 +69,72 @@ export default function App() {
           <Route path="/app/invoices/:id" element={<InvoiceDetailPage />} />
           <Route path="/app/tracking" element={<CustomerTrackingPage />} />
           <Route path="/app/profile" element={<ProfilePage />} />
+        </Route>
+      </Route>
+
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route element={<AdminProtectedRoute />}>
+        <Route element={<AdminShell />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admin/bills" element={<AdminBillsPage />} />
+          <Route path="/admin/rates" element={<AdminRatesPage />} />
+          <Route
+            path="/admin/points"
+            element={
+              <AdminOnlyGuard page="points">
+                <AdminPointsConfigPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/referral"
+            element={
+              <AdminOnlyGuard page="referral">
+                <AdminReferralPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/news"
+            element={
+              <AdminOnlyGuard page="news">
+                <AdminNewsPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/faq"
+            element={
+              <AdminOnlyGuard page="faq">
+                <AdminFaqPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/reviews"
+            element={
+              <AdminOnlyGuard page="reviews">
+                <AdminReviewsPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/notifications"
+            element={
+              <AdminOnlyGuard page="notif">
+                <AdminNotifPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route
+            path="/admin/staff"
+            element={
+              <AdminOnlyGuard page="staff">
+                <AdminStaffPage />
+              </AdminOnlyGuard>
+            }
+          />
+          <Route path="/admin/account" element={<AdminAccountPage />} />
         </Route>
       </Route>
     </Routes>

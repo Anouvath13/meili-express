@@ -104,6 +104,27 @@
       "redeem_over_cap": "超出可抵扣积分上限",
       "insufficient_points": "积分不足",
       "parcel_not_found": "未找到该包裹",
+      "not_authenticated": "请先登录",
+      "session_expired": "会话已过期，请重新登录",
+      "must_change_temp_password": "必须先修改临时密码",
+      "admin_only": "仅系统管理员（admin）可用",
+      "bill_already_delivered": "该账单已送达，无法再修改状态",
+      "customer_not_found": "未找到使用该手机号的客户",
+      "bill_number_taken": "该账单号已存在",
+      "rate_not_found": "未找到该费率",
+      "staff_not_found": "未找到该员工",
+      "cannot_suspend_self": "不能停用自己的账号",
+      "phone_change_already_pending": "已有一个待审批的手机号变更申请",
+      "phone_request_not_found": "未找到该申请，或已处理",
+      "referral_not_found": "未找到该记录",
+      "fraud_flag_not_found": "未找到该记录",
+      "template_not_found": "未找到该模板",
+      "config_key_not_found": "未找到该配置项",
+      "no_valid_keys": "没有可修改的值",
+      "news_not_found": "未找到该新闻",
+      "faq_not_found": "未找到该问题",
+      "review_not_found": "未找到该评价",
+      "team_member_not_found": "未找到该团队成员",
       "generic": "发生错误，请重试"
     },
     "auth": {
@@ -158,6 +179,114 @@
       "personal": "个人资料", "save": "保存", "saved": "已保存", "savePass": "保存密码",
       "changePass": "修改密码", "newPhoneHint": "通过发送到新号码的验证码确认。", "logout": "退出登录",
       "notSetYet": "尚未设置密码 — 可在此设置"
+    }
+  },
+  "admin": {
+    "consoleTag": "后台管理", "customerSite": "客户网站", "logout": "退出登录",
+    "navKicker": "管理菜单", "audStaff": "面向 员工", "audAdmin": "面向 系统管理员",
+    "save": "保存", "saved": "已保存", "add": "新增", "edit": "编辑", "del": "删除", "cancel": "取消",
+    "roleAdmin": "系统管理员", "roleStaff": "员工", "role": "权限",
+    "blockedMsg": "员工账号无权访问此页面 — 仅系统管理员（admin）可用",
+    "forcePasswordNotice": "必须先修改临时密码才能使用其他页面",
+    "fields": {
+      "phone": "手机号", "pass": "密码", "oldPass": "原密码", "newPass": "新密码", "newPass2": "确认新密码",
+      "name": "姓名", "newPhone": "新手机号", "otp": "OTP 验证码", "sendOtp": "发送 OTP"
+    },
+    "login": {
+      "title": "后台登录", "sub": "与客户端完全分开 — 使用手机号加密码，不使用 OTP",
+      "badge": "仅限员工 / 管理员",
+      "cardTitle": "手机号 + 密码", "cardSub": "不开放公开注册 — 账号仅由系统管理员创建",
+      "submit": "登录", "footerNote": "忘记密码？请联系系统管理员重置 — 不支持自助重置",
+      "notes": [
+        "初始账号：020 54699236，绑定系统管理员 ນາງ ໄຂ່ມຸກ ຖາວົງ",
+        "初始密码为临时密码 — 首次登录须修改",
+        "每个账号都有 role 字段（staff / admin）决定可见菜单"
+      ]
+    },
+    "nav": {
+      "dash": "仪表盘", "bills": "账单 / 货物", "rates": "运费费率", "points": "积分系统", "referral": "推荐",
+      "news": "新闻", "faq": "FAQ", "reviews": "评价", "notif": "通知", "staff": "员工", "account": "我的账号"
+    },
+    "pages": {
+      "dash": { "title": "管理仪表盘", "sub": "货物、客户与收入汇总一屏掌握" },
+      "bills": { "title": "账单 / 货物管理", "sub": "更新状态、修改重量、确认收款" },
+      "rates": { "title": "运费费率设置", "sub": "客户服务页展示的起步价（客户端只读）" },
+      "points": { "title": "积分系统设置", "sub": "数值可在此页修改，无需改代码" },
+      "referral": { "title": "推荐管理", "sub": "审核通过或对可疑作弊进行停用" },
+      "news": { "title": "新闻管理", "sub": "新增、编辑、删除与分类" },
+      "faq": { "title": "FAQ 管理", "sub": "新增、编辑、删除问题并分类" },
+      "reviews": { "title": "评价管理", "sub": "上首页前先审核或隐藏" },
+      "notif": { "title": "通知模板管理", "sub": "编辑各类通知文案与变量" },
+      "staff": { "title": "员工管理", "sub": "staff / admin 账号、重置手机号与密码、停用账号" },
+      "account": { "title": "我的账号设置", "sub": "修改手机号（需 admin 审批）与密码" }
+    },
+    "kpi": {
+      "all": "货物总数", "wait": "待付款", "cust": "注册客户", "rev": "总收入",
+      "allNote": "系统内全部账单", "waitNote": "尚未收款的账单", "custNote": "全部客户账号", "revNote": "已付账单合计"
+    },
+    "cols": {
+      "no": "账单号", "cust": "客户", "weight": "重量", "amount": "金额", "status": "状态", "action": "操作",
+      "kind": "货物类型", "unit": "单位", "price": "价格", "currency": "币种",
+      "code": "推荐码", "owner": "推荐人", "invited": "被推荐人", "kg": "累计重量",
+      "title": "标题", "cat": "分类", "date": "日期", "question": "问题", "who": "客户", "stars": "评分",
+      "name": "姓名", "phone": "手机号", "role": "权限"
+    },
+    "status": {
+      "payPaid": "已付款", "payWait": "待付款", "live": "已发布", "draft": "未发布",
+      "unlocked": "已解锁", "locked": "锁定中", "pending": "待审核", "flagged": "可疑作弊",
+      "approved": "已通过", "hidden": "已隐藏", "active": "启用", "suspended": "已停用"
+    },
+    "actions": {
+      "approve": "通过", "suspend": "停用", "unsuspend": "恢复启用", "hide": "隐藏", "edit": "编辑", "del": "删除",
+      "markPaid": "确认收款", "resetPhone": "重置手机号", "resetPass": "重置密码", "save": "保存",
+      "addNews": "新增新闻", "addFaq": "新增问题", "addStaff": "新增账号", "addReview": "新增评价", "addRow": "新增一行",
+      "request": "申请变更", "reject": "拒绝", "sendTest": "发送测试"
+    },
+    "filters": {
+      "bill": ["全部", "待付款", "已付款"],
+      "referral": ["全部", "待解锁", "可疑作弊"]
+    },
+    "forms": {
+      "news": { "title": "新闻表单", "sub": "标题、正文与分类 — 保存后立即上线" },
+      "faq": { "title": "FAQ 表单", "sub": "问题、答案与分类" },
+      "review": { "title": "评价表单", "sub": "客户姓名、评分与评价内容" },
+      "notif": { "title": "编辑通知文案", "sub": "可使用变量 {{billNumber}} {{amount}}" },
+      "rate": { "title": "编辑费率", "sub": "从表格选择一行或输入新值" },
+      "staff": { "title": "新增员工账号", "sub": "仅系统管理员可创建 — 系统自动生成临时密码" },
+      "bill": { "title": "新建账单", "sub": "关联已注册客户的手机号" },
+      "name": { "title": "修改我的姓名", "sub": "该姓名会显示在顶栏" },
+      "phone": { "title": "申请修改我的手机号", "sub": "需另一位管理员审批 — 不使用 OTP" },
+      "pass": { "title": "修改密码", "sub": "须先输入原密码" },
+      "points": { "title": "积分系统参数", "sub": "这些数值即时影响积分计算与折扣" }
+    },
+    "f": {
+      "titleLo": "标题（老挝语）", "titleZh": "标题（中文）", "titleEn": "标题（英文）",
+      "bodyLo": "正文（老挝语）", "bodyZh": "正文（中文）", "bodyEn": "正文（英文）",
+      "questionLo": "问题（老挝语）", "questionZh": "问题（中文）", "questionEn": "问题（英文）",
+      "answerLo": "答案（老挝语）", "answerZh": "答案（中文）", "answerEn": "答案（英文）",
+      "quoteLo": "评价内容（老挝语）", "quoteZh": "评价内容（中文）", "quoteEn": "评价内容（英文）",
+      "authorName": "客户姓名", "stars": "评分（1-5）", "category": "分类",
+      "ratePrice": "单价", "rateCurrency": "币种", "billNumber": "账单号", "customerPhone": "客户手机号",
+      "productType": "货物类型", "weightKg": "重量（公斤）"
+    },
+    "pointsFields": {
+      "points_per_kg": "每公斤积分", "min_weight_kg": "最低起算重量（公斤）", "discount_cap_pct": "每单折扣上限（0-1）",
+      "point_value": "1 积分价值（₭）", "points_expiry_month": "清零月份（1-12）", "points_expiry_day": "清零日期",
+      "referral_bonus_referrer": "推荐人积分", "referral_bonus_referee": "被推荐人积分", "referee_unlock_threshold_kg": "解锁门槛（公斤）"
+    },
+    "resetLog": {
+      "title": "重置记录", "sub": "谁在何时重置了哪个账号的手机号 / 密码",
+      "created": "创建账号", "reset_phone": "重置手机号", "reset_password": "重置密码",
+      "suspend": "停用账号", "unsuspend": "恢复账号", "by": "操作人"
+    },
+    "notes": {
+      "rates": "客户端以只读表格展示 — 没有计算按钮",
+      "staff": "不能删除或停用自己的账号"
+    },
+    "messages": {
+      "tempPasswordNote": "临时密码（请立即告知员工 — 之后不会再显示）",
+      "phoneRequestSent": "已提交手机号变更申请，等待管理员审批",
+      "pendingRequests": "待审批的手机号变更申请"
     }
   }
 }

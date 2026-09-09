@@ -104,6 +104,27 @@
       "redeem_over_cap": "That's above the maximum redeemable points",
       "insufficient_points": "Not enough points",
       "parcel_not_found": "Parcel not found",
+      "not_authenticated": "You need to log in first",
+      "session_expired": "Your session expired — please log in again",
+      "must_change_temp_password": "You must change your temporary password first",
+      "admin_only": "System admin (admin) only",
+      "bill_already_delivered": "This bill has already been delivered — its status can't be changed anymore",
+      "customer_not_found": "No customer found for this phone number",
+      "bill_number_taken": "This bill number already exists",
+      "rate_not_found": "Rate not found",
+      "staff_not_found": "Staff member not found",
+      "cannot_suspend_self": "You can't suspend your own account",
+      "phone_change_already_pending": "There's already a pending phone change request",
+      "phone_request_not_found": "Request not found, or already handled",
+      "referral_not_found": "Referral not found",
+      "fraud_flag_not_found": "Flag not found",
+      "template_not_found": "Template not found",
+      "config_key_not_found": "Config key not found",
+      "no_valid_keys": "Nothing valid to update",
+      "news_not_found": "Post not found",
+      "faq_not_found": "Question not found",
+      "review_not_found": "Review not found",
+      "team_member_not_found": "Team member not found",
       "generic": "Something went wrong, please try again"
     },
     "auth": {
@@ -158,6 +179,114 @@
       "personal": "Personal details", "save": "Save", "saved": "Saved", "savePass": "Save password",
       "changePass": "Change password", "newPhoneHint": "Confirmed with an OTP code sent to the new number.", "logout": "Log out",
       "notSetYet": "No password set yet — you can set one here"
+    }
+  },
+  "admin": {
+    "consoleTag": "ADMIN CONSOLE", "customerSite": "Customer site", "logout": "Sign out",
+    "navKicker": "ADMIN MENU", "audStaff": "FOR STAFF", "audAdmin": "FOR SYSTEM ADMIN",
+    "save": "Save", "saved": "Saved", "add": "Add", "edit": "Edit", "del": "Delete", "cancel": "Cancel",
+    "roleAdmin": "System admin", "roleStaff": "Staff", "role": "Role",
+    "blockedMsg": "Staff accounts cannot open this page — system admin (admin) only.",
+    "forcePasswordNotice": "You must change your temporary password before you can use any other page.",
+    "fields": {
+      "phone": "Phone number", "pass": "Password", "oldPass": "Current password", "newPass": "New password", "newPass2": "Confirm new password",
+      "name": "Full name", "newPhone": "New phone number", "otp": "OTP code", "sendOtp": "Send OTP"
+    },
+    "login": {
+      "title": "Admin console sign-in", "sub": "Fully separate from the customer flow — phone number and password, not OTP",
+      "badge": "STAFF / ADMIN ONLY",
+      "cardTitle": "Phone + password", "cardSub": "No public sign-up — accounts are created by a system admin only",
+      "submit": "Sign in", "footerNote": "Forgot your password? Ask a system admin to reset it — there is no self-service reset.",
+      "notes": [
+        "Seed account: 020 54699236, bound to system admin ນາງ ໄຂ່ມຸກ ຖາວົງ",
+        "The first password is a temporary one — it must be changed on first sign-in",
+        "Every account carries a role field (staff / admin) that decides which menus are reachable"
+      ]
+    },
+    "nav": {
+      "dash": "Dashboard", "bills": "Bills / parcels", "rates": "Shipping rates", "points": "Points system", "referral": "Referral",
+      "news": "News", "faq": "FAQ", "reviews": "Reviews", "notif": "Notifications", "staff": "Staff", "account": "My account"
+    },
+    "pages": {
+      "dash": { "title": "Admin dashboard", "sub": "Parcels, customers and revenue in one view" },
+      "bills": { "title": "Bill / parcel management", "sub": "Update status, correct weights, confirm payment" },
+      "rates": { "title": "Shipping rate settings", "sub": "Starting rates shown on the services page (read-only for customers)" },
+      "points": { "title": "Points system settings", "sub": "Every number is editable here — no code changes needed" },
+      "referral": { "title": "Referral management", "sub": "Approve, or suspend suspected abuse" },
+      "news": { "title": "News management", "sub": "Add, edit, delete and categorise posts" },
+      "faq": { "title": "FAQ management", "sub": "Add, edit and delete questions with categories" },
+      "reviews": { "title": "Review management", "sub": "Approve or hide reviews before they reach the home page" },
+      "notif": { "title": "Notification templates", "sub": "Edit the copy and variables for each notification" },
+      "staff": { "title": "Staff management", "sub": "staff / admin accounts, phone and password resets, suspensions" },
+      "account": { "title": "My account settings", "sub": "Change your phone number (needs admin approval) and password" }
+    },
+    "kpi": {
+      "all": "Parcels total", "wait": "Awaiting payment", "cust": "Registered customers", "rev": "Total revenue",
+      "allNote": "Every bill in the system", "waitNote": "Bills not yet collected", "custNote": "All customer accounts", "revNote": "Sum of paid bills"
+    },
+    "cols": {
+      "no": "Bill no.", "cust": "Customer", "weight": "Weight", "amount": "Amount", "status": "Status", "action": "Actions",
+      "kind": "Cargo type", "unit": "Unit", "price": "Price", "currency": "Currency",
+      "code": "Code", "owner": "Referrer", "invited": "Invitee", "kg": "Total weight",
+      "title": "Title", "cat": "Category", "date": "Date", "question": "Question", "who": "Customer", "stars": "Rating",
+      "name": "Name", "phone": "Phone", "role": "Role"
+    },
+    "status": {
+      "payPaid": "Paid", "payWait": "Awaiting payment", "live": "Published", "draft": "Unpublished",
+      "unlocked": "Unlocked", "locked": "Locked", "pending": "Pending review", "flagged": "Suspected abuse",
+      "approved": "Approved", "hidden": "Hidden", "active": "Active", "suspended": "Suspended"
+    },
+    "actions": {
+      "approve": "Approve", "suspend": "Suspend", "unsuspend": "Unsuspend", "hide": "Hide", "edit": "Edit", "del": "Delete",
+      "markPaid": "Mark paid", "resetPhone": "Reset phone", "resetPass": "Reset password", "save": "Save",
+      "addNews": "Add post", "addFaq": "Add question", "addStaff": "Add account", "addReview": "Add review", "addRow": "Add row",
+      "request": "Request change", "reject": "Reject", "sendTest": "Send test"
+    },
+    "filters": {
+      "bill": ["All", "Awaiting payment", "Paid"],
+      "referral": ["All", "Awaiting unlock", "Suspected abuse"]
+    },
+    "forms": {
+      "news": { "title": "News form", "sub": "Title, body and category — saved posts go live immediately" },
+      "faq": { "title": "FAQ form", "sub": "Question, answer and category" },
+      "review": { "title": "Review form", "sub": "Customer name, rating and quote" },
+      "notif": { "title": "Edit notification copy", "sub": "Variables {{billNumber}} {{amount}} are available" },
+      "rate": { "title": "Edit rate", "sub": "Pick a row from the table or type new values" },
+      "staff": { "title": "Add a staff account", "sub": "System admin only — a temporary password is generated automatically" },
+      "bill": { "title": "Create a new bill", "sub": "Linked to an already-registered customer's phone number" },
+      "name": { "title": "Change my full name", "sub": "This name appears in the header bar" },
+      "phone": { "title": "Request a phone number change", "sub": "Needs another admin's approval — no OTP" },
+      "pass": { "title": "Change password", "sub": "Enter your current password first" },
+      "points": { "title": "Points system values", "sub": "These values apply immediately to earning and discounts" }
+    },
+    "f": {
+      "titleLo": "Title (Lao)", "titleZh": "Title (Chinese)", "titleEn": "Title (English)",
+      "bodyLo": "Body (Lao)", "bodyZh": "Body (Chinese)", "bodyEn": "Body (English)",
+      "questionLo": "Question (Lao)", "questionZh": "Question (Chinese)", "questionEn": "Question (English)",
+      "answerLo": "Answer (Lao)", "answerZh": "Answer (Chinese)", "answerEn": "Answer (English)",
+      "quoteLo": "Quote (Lao)", "quoteZh": "Quote (Chinese)", "quoteEn": "Quote (English)",
+      "authorName": "Customer name", "stars": "Rating (1-5)", "category": "Category",
+      "ratePrice": "Price per unit", "rateCurrency": "Currency", "billNumber": "Bill number", "customerPhone": "Customer phone",
+      "productType": "Cargo type", "weightKg": "Weight (kg)"
+    },
+    "pointsFields": {
+      "points_per_kg": "Points per kg", "min_weight_kg": "Minimum weight to earn points (kg)", "discount_cap_pct": "Discount cap per bill (0-1)",
+      "point_value": "Value of 1 point (₭)", "points_expiry_month": "Reset month (1-12)", "points_expiry_day": "Reset day",
+      "referral_bonus_referrer": "Referrer points", "referral_bonus_referee": "Invitee points", "referee_unlock_threshold_kg": "Unlock threshold (kg)"
+    },
+    "resetLog": {
+      "title": "Reset log", "sub": "Who reset which account's phone or password, and when",
+      "created": "Account created", "reset_phone": "Phone reset", "reset_password": "Password reset",
+      "suspend": "Account suspended", "unsuspend": "Account unsuspended", "by": "by"
+    },
+    "notes": {
+      "rates": "Customers see this table read-only — there is no calculator button",
+      "staff": "You can't delete or suspend your own account"
+    },
+    "messages": {
+      "tempPasswordNote": "Temporary password (tell the staff member now — it won't be shown again)",
+      "phoneRequestSent": "Phone change request sent, waiting for admin approval",
+      "pendingRequests": "Pending phone change requests"
     }
   }
 }
