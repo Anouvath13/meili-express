@@ -31,11 +31,11 @@ adminAuthRouter.post(
     const body = z.object({ phone: phoneSchema, password: z.string().min(1) }).parse(req.body);
 
     const staff = await prisma.staff.findUnique({ where: { phone: body.phone } });
-    if (!staff) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง");
-    if (staff.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน");
+    if (!staff) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง", "invalid_credentials");
+    if (staff.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน", "account_suspended");
 
     const ok = await comparePassword(body.password, staff.passwordHash);
-    if (!ok) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง");
+    if (!ok) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง", "invalid_credentials");
 
     await prisma.staff.update({ where: { id: staff.id }, data: { lastLoginAt: new Date() } });
 
@@ -63,7 +63,7 @@ adminAuthRouter.put(
     const staff = await prisma.staff.findUniqueOrThrow({ where: { id: req.staff!.id } });
 
     const ok = await comparePassword(body.oldPassword, staff.passwordHash);
-    if (!ok) throw new AppError(401, "รหัสผ่านเดิมไม่ถูกต้อง");
+    if (!ok) throw new AppError(401, "รหัสผ่านเดิมไม่ถูกต้อง", "wrong_old_password");
 
     const passwordHash = await hashPassword(body.newPassword);
     await prisma.staff.update({

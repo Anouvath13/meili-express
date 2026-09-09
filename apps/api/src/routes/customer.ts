@@ -11,7 +11,12 @@ import { pointsBalance, redeemPointsForShipment } from "../lib/points.js";
 import { prisma } from "../lib/prisma.js";
 
 export const customerRouter = Router();
-customerRouter.use(requireCustomerAuth);
+// Deliberately NOT `customerRouter.use(requireCustomerAuth)` — that blanket
+// form intercepts every request under this router's mount prefix (even ones
+// matching no route here) and, on failure, calls next(err), which skips
+// every sibling app.use() too — including publicRouter's actual routes when
+// this router is mounted before it. Applying the guard per-route avoids
+// that trap regardless of mount order.
 
 function shipmentSummary(s: {
   id: string;
@@ -40,6 +45,7 @@ function shipmentSummary(s: {
 // ================================================================ points
 customerRouter.get(
   "/points/balance",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     res.json(await pointsBalance(req.userId!));
   }),
@@ -47,6 +53,7 @@ customerRouter.get(
 
 customerRouter.get(
   "/points/history",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const query = z.object({ limit: z.coerce.number().int().positive().max(100).optional() }).parse(req.query);
     const entries = await prisma.pointsLedger.findMany({
@@ -72,6 +79,7 @@ customerRouter.get(
 // ============================================================== referral
 customerRouter.get(
   "/referral/code",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const user = await prisma.user.findUniqueOrThrow({ where: { id: req.userId! } });
     res.json({ accountId: user.accountId, referralUrl: `/ref/${user.accountId}` });
@@ -80,6 +88,7 @@ customerRouter.get(
 
 customerRouter.get(
   "/referral/friends",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const referrals = await prisma.referral.findMany({
       where: { referrerId: req.userId! },
@@ -108,6 +117,7 @@ customerRouter.get(
 // separate invoice entity in the schema (§ Backend Design Document §1).
 customerRouter.get(
   "/invoices",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const query = z
       .object({ limit: z.coerce.number().int().positive().max(100).optional(), filter: z.enum(["all", "unpaid", "paid"]).optional() })
@@ -131,6 +141,7 @@ customerRouter.get(
 
 customerRouter.get(
   "/invoices/:id",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const shipment = await prisma.shipment.findUnique({ where: { id: req.params.id } });
     if (!shipment || shipment.userId !== req.userId) throw new AppError(404, "ไม่พบบิลนี้", "invoice_not_found");
@@ -158,6 +169,7 @@ customerRouter.get(
 
 customerRouter.post(
   "/invoices/:id/redeem-points",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const body = z.object({ points: z.coerce.number().int().positive() }).parse(req.body);
     const result = await redeemPointsForShipment(req.userId!, req.params.id, body.points);
@@ -170,6 +182,7 @@ customerRouter.post(
 // (ParcelPicker / ActiveParcelCard / TrackingCard in Component Spec Batch 2).
 customerRouter.get(
   "/parcels",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const shipments = await prisma.shipment.findMany({
       where: { userId: req.userId! },
@@ -182,6 +195,7 @@ customerRouter.get(
 
 customerRouter.get(
   "/parcels/active",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const shipment = await prisma.shipment.findFirst({
       where: { userId: req.userId!, status: { not: "delivered" } },
@@ -193,6 +207,7 @@ customerRouter.get(
 
 customerRouter.get(
   "/parcels/:billNumber/status",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const shipment = await prisma.shipment.findUnique({
       where: { billNumber: req.params.billNumber.trim().toUpperCase() },
@@ -210,6 +225,7 @@ customerRouter.get(
 // =============================================================== profile
 customerRouter.get(
   "/profile",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const user = await prisma.user.findUniqueOrThrow({ where: { id: req.userId! } });
     res.json({ id: user.id, accountId: user.accountId, phone: user.phone, fullName: user.fullName, email: user.email });
@@ -218,6 +234,7 @@ customerRouter.get(
 
 customerRouter.patch(
   "/profile",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const body = z.object({ fullName: z.string().min(1).optional(), email: z.string().email().nullable().optional() }).parse(req.body);
     const user = await prisma.user.update({ where: { id: req.userId! }, data: body });
@@ -227,6 +244,7 @@ customerRouter.patch(
 
 customerRouter.post(
   "/profile/change-phone",
+  requireCustomerAuth,
   asyncHandler(async (req, res) => {
     const body = z.object({ newPhone: z.string().min(8).transform(normalizePhone), otp: z.string().length(6) }).parse(req.body);
 

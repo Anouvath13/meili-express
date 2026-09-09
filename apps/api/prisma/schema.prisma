@@ -278,6 +278,8 @@ model Staff {
   reviewedFraudFlags    FraudFlag[]
   resetLogEntries       StaffResetLog[]           @relation("ResetLogTarget")
   resetLogActions       StaffResetLog[]           @relation("ResetLogActor")
+  phoneChangeRequests    StaffPhoneChangeRequest[] @relation("PhoneChangeRequester")
+  phoneChangeReviews     StaffPhoneChangeRequest[] @relation("PhoneChangeReviewer")
   configUpdates         SystemConfig[]
   newsUpdates           NewsArticle[]
   faqUpdates            FaqItem[]
@@ -300,6 +302,30 @@ model StaffResetLog {
   createdAt     DateTime @default(now()) @map("created_at")
 
   @@map("staff_reset_log")
+}
+
+// Not in the original Backend Design Document (its /admin/me/phone/otp used
+// OTP, which contradicts the confirmed "no OTP anywhere for admin" rule).
+// Changing an admin/staff phone number instead requires another admin to
+// approve the request — no self-service, no OTP.
+enum PhoneChangeStatus {
+  pending
+  approved
+  rejected
+}
+
+model StaffPhoneChangeRequest {
+  id           String            @id @default(uuid())
+  staffId      String            @map("staff_id")
+  staff        Staff             @relation("PhoneChangeRequester", fields: [staffId], references: [id])
+  newPhone     String            @map("new_phone")
+  status       PhoneChangeStatus @default(pending)
+  requestedAt  DateTime          @default(now()) @map("requested_at")
+  reviewedById String?           @map("reviewed_by")
+  reviewedBy   Staff?            @relation("PhoneChangeReviewer", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?         @map("reviewed_at")
+
+  @@map("staff_phone_change_requests")
 }
 
 // ============================================================

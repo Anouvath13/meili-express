@@ -65,7 +65,7 @@ export async function creditReferralBonus(tx: TransactionClient, referralId: str
   });
 }
 
-function expiryForThisYear(month: number, day: number): Date {
+export function expiryForThisYear(month: number, day: number): Date {
   const now = new Date();
   const year = now.getMonth() + 1 > month || (now.getMonth() + 1 === month && now.getDate() > day)
     ? now.getFullYear() + 1

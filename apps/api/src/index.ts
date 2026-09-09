@@ -5,6 +5,13 @@ import cron from "node-cron";
 import { ZodError } from "zod";
 import { AppError } from "./lib/errors.js";
 import { resetExpiredPoints } from "./lib/points.js";
+import { adminAccountRouter } from "./routes/admin.account.js";
+import { adminBillsRouter } from "./routes/admin.bills.js";
+import { adminCmsRouter } from "./routes/admin.cms.js";
+import { adminConfigRouter } from "./routes/admin.config.js";
+import { adminNotificationsRouter } from "./routes/admin.notifications.js";
+import { adminReferralsRouter } from "./routes/admin.referrals.js";
+import { adminStaffRouter } from "./routes/admin.staff.js";
 import { adminAuthRouter } from "./routes/auth.admin.js";
 import { customerAuthRouter } from "./routes/auth.customer.js";
 import { customerRouter } from "./routes/customer.js";
@@ -20,8 +27,19 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "meili-express-api" });
 });
 
+// Every router below applies its own auth middleware per-route (never as a
+// blanket `router.use(...)`) — see customer.ts's comment for why: a
+// router-wide auth guard swallows sibling routers' unauthenticated routes
+// too when mount prefixes overlap, regardless of registration order.
 app.use("/api/auth", customerAuthRouter);
 app.use("/api/admin", adminAuthRouter);
+app.use("/api/admin", adminAccountRouter);
+app.use("/api/admin", adminConfigRouter);
+app.use("/api/admin", adminCmsRouter);
+app.use("/api/admin", adminNotificationsRouter);
+app.use("/api/admin", adminStaffRouter);
+app.use("/api/admin", adminBillsRouter);
+app.use("/api/admin", adminReferralsRouter);
 app.use("/api", customerRouter);
 app.use("/api", publicRouter);
 

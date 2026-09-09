@@ -1,6 +1,8 @@
 import { getConfigNumber } from "./config.js";
 import { AppError } from "./errors.js";
+import { notifyUser } from "./notify.js";
 import { prisma } from "./prisma.js";
+import { expiryForThisYear } from "./referral.js";
 
 export async function pointsBalance(userId: string) {
   const [unlocked, locked, nextExpiry] = await Promise.all([
@@ -70,6 +72,83 @@ export async function redeemPointsForShipment(userId: string, shipmentId: string
 
   const discount = pointsToUse * pointValue;
   return { pointsUsed: pointsToUse, discount, total: price - discount };
+}
+
+// §2 calculatePoints — called once, when a shipment's status is set to
+// `delivered` (that's the point notif_delivered fires: "จัดส่งสำเร็จ +
+// แต้มได้รับ"). Idempotent: refuses to double-award if a transport entry
+// already exists for this shipment.
+export async function calculatePoints(shipmentId: string): Promise<number> {
+  const shipment = await prisma.shipment.findUniqueOrThrow({ where: { id: shipmentId } });
+
+  const already = await prisma.pointsLedger.findFirst({ where: { shipmentId, source: "transport" } });
+  if (already) return 0;
+
+  const [minWeightKg, pointsPerKg, expiryMonth, expiryDay] = await Promise.all([
+    getConfigNumber("min_weight_kg"),
+    getConfigNumber("points_per_kg"),
+    getConfigNumber("points_expiry_month"),
+    getConfigNumber("points_expiry_day"),
+  ]);
+
+  const weightKg = shipment.weightKg !== null ? Number(shipment.weightKg) : 0;
+  if (weightKg < minWeightKg) return 0;
+
+  const points = Math.floor(weightKg * pointsPerKg);
+  if (points <= 0) return 0;
+
+  await prisma.pointsLedger.create({
+    data: {
+      userId: shipment.userId,
+      shipmentId,
+      delta: points,
+      source: "transport",
+      status: "unlocked",
+      expiresAt: expiryForThisYear(expiryMonth, expiryDay),
+    },
+  });
+  return points;
+}
+
+// §2 checkRefereeUnlock — call after calculatePoints for the same shipment's
+// owner. Unlocks the referee's locked referral bonus once their cumulative
+// *delivered* weight crosses the configured threshold.
+export async function checkRefereeUnlock(refereeUserId: string): Promise<boolean> {
+  const referral = await prisma.referral.findFirst({ where: { refereeId: refereeUserId, status: "pending" } });
+  if (!referral) return false;
+
+  const threshold = await getConfigNumber("referee_unlock_threshold_kg");
+  const delivered = await prisma.shipment.aggregate({
+    where: { userId: refereeUserId, status: "delivered" },
+    _sum: { weightKg: true },
+  });
+  const totalKg = Number(delivered._sum.weightKg ?? 0);
+
+  await prisma.referral.update({ where: { id: referral.id }, data: { cumulativeKg: totalKg } });
+  if (totalKg < threshold) return false;
+
+  await prisma.$transaction([
+    prisma.pointsLedger.updateMany({
+      where: { referralId: referral.id, userId: refereeUserId, status: "locked" },
+      data: { status: "unlocked" },
+    }),
+    prisma.referral.update({
+      where: { id: referral.id },
+      data: { status: "unlocked", refereeUnlockAt: new Date() },
+    }),
+  ]);
+  await notifyUser(refereeUserId, "notif_referral_unlocked");
+  return true;
+}
+
+// Convenience wrapper for the admin bill-status-update endpoint — runs both
+// steps in the order the Backend Design Document describes ("เรียกทุกครั้ง
+// หลัง calculatePoints สำเร็จ").
+export async function awardPointsOnDelivery(shipmentId: string): Promise<{ pointsAwarded: number; refereeUnlocked: boolean }> {
+  const shipment = await prisma.shipment.findUniqueOrThrow({ where: { id: shipmentId } });
+  const pointsAwarded = await calculatePoints(shipmentId);
+  const refereeUnlocked = await checkRefereeUnlock(shipment.userId);
+  return { pointsAwarded, refereeUnlocked };
 }
 
 // §2 "Cron Job: ปีใหม่รีเซ็ตแต้ม" — 0 1 1 1 * (Jan 1st, 01:00). Any unlocked,
