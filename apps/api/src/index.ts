@@ -20,7 +20,14 @@ import { publicRouter } from "./routes/public.js";
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
-app.use(cors());
+// CORS_ORIGIN is a comma-separated allowlist (set in production to the
+// deployed web app's URL). Unset in dev, which falls back to reflecting any
+// origin so localhost works without config.
+const allowedOrigins = (process.env.CORS_ORIGIN ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : true }));
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {

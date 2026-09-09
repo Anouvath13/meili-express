@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: meili-express-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build -w @meili/api
+    startCommand: node apps/api/dist/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_CUSTOMER_SECRET
+        generateValue: true
+      - key: JWT_ADMIN_SECRET
+        generateValue: true
+      - key: SMS_PROVIDER
+        value: mock
+      - key: CORS_ORIGIN
+        sync: false

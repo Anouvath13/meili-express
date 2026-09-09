@@ -28,7 +28,10 @@ export async function generateAndSendOtp(phone: string, purpose: OtpPurpose): Pr
 
   await sendSms(phone, `${OTP_MESSAGE[purpose]} ${code} (${OTP_TTL_MINUTES} นาที)`);
 
-  return isMockSms ? { devCode: code } : {};
+  // devCode is a local-dev convenience only — never leak the OTP in the
+  // response once deployed, even while SMS_PROVIDER is still "mock".
+  const devMode = isMockSms && process.env.NODE_ENV !== "production";
+  return devMode ? { devCode: code } : {};
 }
 
 // `consume: false` is a pre-check only (Backend Design Document's
