@@ -3,7 +3,7 @@ import { z } from "zod";
 import { SHIPMENT_STATUS, type ShipmentStatus } from "@meili/shared";
 import { AppError } from "../lib/errors.js";
 import { asyncHandler } from "../lib/http.js";
-import { blockIfTempPassword, requireStaffAuth } from "../middleware/auth.js";
+import { blockIfTempPassword, requireRole, requireStaffAuth } from "../middleware/auth.js";
 import { awardPointsOnDelivery } from "../lib/points.js";
 import { prisma } from "../lib/prisma.js";
 import { notifyUser } from "../lib/notify.js";
@@ -13,6 +13,10 @@ export const adminBillsRouter = Router();
 // "dash" and "bills" are both in STAFF_PAGES — staff process shipments day
 // to day, so no requireRole('admin') gate here.
 const staffOrAdmin = [requireStaffAuth, blockIfTempPassword];
+// Suspending a customer account is a heavier action than day-to-day bill
+// work, so it stays admin-only even though it's surfaced on the (staff+admin)
+// bills page.
+const adminOnly = [requireStaffAuth, blockIfTempPassword, requireRole("admin" as const)];
 
 const STATUS_NOTIF_KEY: Record<ShipmentStatus, string> = {
   received_from_china: "notif_picked_up",
@@ -36,14 +40,16 @@ function billSummary(s: {
   estimatedDelivery: Date | null;
   actualDelivery: Date | null;
   assignedStaffId: string | null;
-  user?: { fullName: string | null; phone: string };
+  user?: { id: string; fullName: string | null; phone: string; status: string };
   assignedStaff?: { fullName: string } | null;
 }) {
   return {
     id: s.id,
     billNumber: s.billNumber,
+    customerId: s.user?.id ?? null,
     customerName: s.user?.fullName ?? null,
     customerPhone: s.user?.phone ?? null,
+    customerStatus: s.user?.status ?? null,
     productType: s.productType,
     weightKg: s.weightKg,
     price: s.price,
@@ -71,7 +77,7 @@ adminBillsRouter.get(
           ? { OR: [{ billNumber: { contains: query.q, mode: "insensitive" } }, { user: { phone: { contains: query.q } } }] }
           : {}),
       },
-      include: { user: { select: { fullName: true, phone: true } }, assignedStaff: { select: { fullName: true } } },
+      include: { user: { select: { id: true, fullName: true, phone: true, status: true } }, assignedStaff: { select: { fullName: true } } },
       orderBy: { createdAt: "desc" },
       take: query.limit ?? 100,
     });
@@ -86,7 +92,7 @@ adminBillsRouter.get(
     const bill = await prisma.shipment.findUnique({
       where: { id: req.params.id },
       include: {
-        user: { select: { fullName: true, phone: true } },
+        user: { select: { id: true, fullName: true, phone: true, status: true } },
         assignedStaff: { select: { fullName: true } },
         trackingHistory: { orderBy: { changedAt: "asc" }, include: { changedBy: { select: { fullName: true } } } },
       },
@@ -218,6 +224,25 @@ adminBillsRouter.patch(
     }
 
     res.json({ ok: true, pointsAwarded, refereeUnlocked });
+  }),
+);
+
+// --------------------------------------------------------- customer status
+// General-purpose suspend/unsuspend for any customer account — separate from
+// the fraud-flag review flow in admin.referrals.ts, which only ever touches
+// users that already have a flag raised against them. Admin-only since it
+// directly affects a customer's ability to log in.
+adminBillsRouter.patch(
+  "/customers/:id/status",
+  ...adminOnly,
+  asyncHandler(async (req, res) => {
+    const body = z.object({ status: z.enum(["active", "suspended"]) }).parse(req.body);
+
+    const customer = await prisma.user.findUnique({ where: { id: req.params.id } });
+    if (!customer) throw new AppError(404, "ไม่พบลูกค้ารายนี้", "customer_not_found");
+
+    await prisma.user.update({ where: { id: customer.id }, data: { status: body.status } });
+    res.json({ ok: true, status: body.status });
   }),
 );
 

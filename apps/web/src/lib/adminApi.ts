@@ -67,8 +67,10 @@ export type ShipmentStatus =
 export type Bill = {
   id: string
   billNumber: string
+  customerId: string | null
   customerName: string | null
   customerPhone: string | null
+  customerStatus: 'active' | 'suspended' | 'pending_review' | null
   productType: string | null
   weightKg: string | null
   price: string | null
@@ -97,6 +99,11 @@ export const adminBillsApi = {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     }),
+}
+
+export const adminCustomersApi = {
+  setStatus: (id: string, status: 'active' | 'suspended') =>
+    adminFetch<{ ok: true; status: string }>(`/api/admin/customers/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 }
 
 // ==================================================================== rates

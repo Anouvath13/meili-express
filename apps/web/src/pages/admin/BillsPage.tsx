@@ -4,14 +4,16 @@ import { useTranslation } from 'react-i18next'
 import { SHIPMENT_STATUS } from '@meili/shared'
 import { AdminBadge, AdminCell, AdminTable, AdminTableRow, ActionButton, FilterPills, FormCard, TextField, PrimaryButton, Notice } from '../../components/admin/ui'
 import { PageHeader } from '../../components/admin/PageHeader'
-import { adminBillsApi, type ShipmentStatus } from '../../lib/adminApi'
+import { adminBillsApi, adminCustomersApi, type ShipmentStatus } from '../../lib/adminApi'
 import { apiErrorMessage } from '../../lib/errorMessage'
 import { formatKip } from '../../lib/format'
 import { isPaid } from '../../lib/shipmentStatus'
+import { useAdminAuth } from '../../store/adminAuth'
 
 export default function AdminBillsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const isAdmin = useAdminAuth((s) => s.staff?.role === 'admin')
   const [filter, setFilter] = useState(0)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [weight, setWeight] = useState('')
@@ -66,6 +68,11 @@ export default function AdminBillsPage() {
     setError(null)
   }
 
+  const toggleCustomerStatus = useMutation({
+    mutationFn: ({ customerId, next }: { customerId: string; next: 'active' | 'suspended' }) => adminCustomersApi.setStatus(customerId, next),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'bills'] }),
+  })
+
   return (
     <div>
       <PageHeader title={t('admin.pages.bills.title')} subtitle={t('admin.pages.bills.sub')} />
@@ -86,13 +93,34 @@ export default function AdminBillsPage() {
       >
         {filtered.map((b) => {
           const paid = isPaid(b.status)
+          const suspended = b.customerStatus === 'suspended'
           return (
-            <AdminTableRow key={b.id} actions={<ActionButton label={t('admin.actions.edit')} kind={editingId === b.id ? 'primary' : 'default'} onClick={() => startEdit(b.id, b.status)} />}>
+            <AdminTableRow
+              key={b.id}
+              actions={
+                <>
+                  <ActionButton label={t('admin.actions.edit')} kind={editingId === b.id ? 'primary' : 'default'} onClick={() => startEdit(b.id, b.status)} />
+                  {isAdmin && b.customerId && (
+                    <ActionButton
+                      label={t(suspended ? 'admin.actions.unsuspend' : 'admin.actions.suspend')}
+                      kind={suspended ? 'default' : 'danger'}
+                      onClick={() => toggleCustomerStatus.mutate({ customerId: b.customerId!, next: suspended ? 'active' : 'suspended' })}
+                      disabled={toggleCustomerStatus.isPending}
+                    />
+                  )}
+                </>
+              }
+            >
               <AdminCell flex={1.2} mono strong>
                 {b.billNumber}
               </AdminCell>
               <AdminCell flex={1} mono dim>
                 {b.customerPhone ?? '—'}
+                {suspended && (
+                  <span className="ml-2">
+                    <AdminBadge label={t('admin.status.suspended')} tone="bad" />
+                  </span>
+                )}
               </AdminCell>
               <AdminCell flex={0.8}>{b.weightKg ? `${b.weightKg} kg` : '—'}</AdminCell>
               <AdminCell flex={1}>{b.price ? formatKip(b.price) : '—'}</AdminCell>
