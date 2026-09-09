@@ -4,7 +4,10 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm install && npm run build -w @meili/api
+    # --include=dev overrides NODE_ENV=production for this install step —
+    # the TypeScript build needs devDependencies (typescript, @types/*)
+    # even though NODE_ENV=production is set for the app's own runtime logic.
+    buildCommand: npm install --include=dev && npm run build -w @meili/api
     startCommand: node apps/api/dist/index.js
     healthCheckPath: /api/health
     envVars:
