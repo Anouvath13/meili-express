@@ -13,7 +13,7 @@ import { assertNotSelfReferral, creditReferralBonus, generateAccountId } from ".
 export const customerAuthRouter = Router();
 
 const phoneSchema = z.string().min(8).transform(normalizePhone);
-const otpPurposeSchema = z.enum(["register", "login", "reset_password"]);
+const otpPurposeSchema = z.enum(["register", "login", "reset_password", "change_phone"]);
 
 function toPublicUser(user: { id: string; accountId: string; phone: string; fullName: string | null; email: string | null; passwordHash: string | null }) {
   return {
@@ -33,7 +33,9 @@ customerAuthRouter.post(
     const body = z.object({ phone: phoneSchema, purpose: otpPurposeSchema }).parse(req.body);
 
     const existing = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (body.purpose === "register" && existing) {
+    // change_phone sends the OTP to a brand-new number, same existence rule
+    // as register: it must not already belong to another account.
+    if ((body.purpose === "register" || body.purpose === "change_phone") && existing) {
       throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
     }
     if ((body.purpose === "login" || body.purpose === "reset_password") && !existing) {
