@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { LogoOutline } from '../../../components/primitives/Logo'
+import { LogoMark } from '../../../components/primitives/Logo'
 import { pickLang } from '../../../lib/localize'
 import type { NewsListItem } from '../../../lib/publicApi'
 
@@ -19,7 +19,7 @@ export function NewsCard({ item }: { item: NewsListItem }) {
     >
       <div className="flex h-[150px] items-center justify-center bg-gradient-news">
         <div className="opacity-50">
-          <LogoOutline size={34} />
+          <LogoMark size={34} />
         </div>
       </div>
       <div className="p-7">

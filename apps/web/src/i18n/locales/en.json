@@ -22,10 +22,10 @@
     "kicker": "WHY MEILI",
     "title": "China–Laos freight with a visible status at every stage",
     "items": [
-      { "title": "Container-truck freight", "body": "Specialised in the China–Laos route, safe the whole way" },
-      { "title": "Border-crossing expertise", "body": "Familiar with customs rules and paperwork" },
-      { "title": "Two-layer tracking", "body": "Our own system, plus a direct link to a major Chinese carrier's system" },
-      { "title": "Reward points", "body": "1 kg = 1 point, minimum 3 kg · redeem up to 15% of an invoice" }
+      { "title": "Starting rates", "body": "General small cargo 19,000 ₭ per kg · heavy cargo 14,000 ₭ per tonne" },
+      { "title": "7 shipment statuses", "body": "From received in China through to delivery completed" },
+      { "title": "Reward points", "body": "1 kg = 1 point, minimum 3 kg · 1 point = 100 ₭, redeem up to 15% of an invoice" },
+      { "title": "Referrals", "body": "Referrer gets 50 points immediately · new customer gets 20 points, unlocked after shipping 5 kg" }
     ]
   },
   "rates": {

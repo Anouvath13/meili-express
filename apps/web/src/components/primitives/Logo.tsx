@@ -1,17 +1,12 @@
+// Brand mark: 3 forward-leaning bars (dark, orange, orange) — see
+// logo-lockup-1600x560.png / logo-icon-800x800.png in the project root.
 export function LogoMark({ size = 30 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} className="block" aria-hidden="true">
-      <circle cx="12" cy="12" r="11" fill="#FF6A14" />
-      <path d="M7 16V8l5 5 5-5v8" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
+    <svg viewBox="0 0 46 40" width={size} height={(size * 40) / 46} className="block" aria-hidden="true">
+      <polygon points="2,40 10,40 20,0 12,0" fill="#101114" />
+      <polygon points="14,40 22,40 32,0 24,0" fill="#FF6A14" />
+      <polygon points="26,40 34,40 44,0 36,0" fill="#FF6A14" />
     </svg>
   )
 }
 
-export function LogoOutline({ size = 22 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" width={size} height={size} className="block" aria-hidden="true">
-      <circle cx="12" cy="12" r="11" fill="none" stroke="#FF6A14" strokeWidth="2" />
-      <path d="M7 16V8l5 5 5-5v8" fill="none" stroke="#FF6A14" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
-  )
-}

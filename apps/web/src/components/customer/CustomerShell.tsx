@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { customerAuthApi } from '../../lib/customerApi'
 import { useCustomerAuth } from '../../store/customerAuth'
 import { Container } from '../primitives/Container'
-import { LogoMark, LogoOutline } from '../primitives/Logo'
+import { LogoMark } from '../primitives/Logo'
 import { LangSwitcher } from '../layout/LangSwitcher'
 
 const NAV_ITEMS: { to: string; key: string }[] = [
@@ -124,7 +124,7 @@ export function CustomerShell() {
             <div className="min-w-[240px] flex-1">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
-                  <LogoOutline size={19} />
+                  <LogoMark size={19} />
                 </div>
                 <div className="text-[15px] font-bold tracking-[0.06em] text-white">MEILI EXPRESS</div>
               </div>

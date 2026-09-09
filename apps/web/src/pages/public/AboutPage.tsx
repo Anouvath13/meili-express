@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Container } from '../../components/primitives/Container'
-import { LogoOutline } from '../../components/primitives/Logo'
+import { LogoMark } from '../../components/primitives/Logo'
 import { OrangeIconBadge } from '../../components/primitives/OrangeIconBadge'
 import { Hero } from '../../components/layout/Hero'
 
@@ -15,7 +15,7 @@ export default function AboutPage() {
       <Container className="py-14 sm:py-[88px]">
         <div className="flex flex-wrap gap-[22px]">
           <div className="min-w-[240px] flex-1 rounded-[20px] bg-white p-8 shadow-card">
-            <LogoOutline size={22} />
+            <LogoMark size={22} />
             <p className="mt-6 text-[16.5px] leading-[1.9] text-ink-700 text-pretty">{t('about.intro')}</p>
           </div>
           <div className="min-w-[240px] flex-1 rounded-[20px] bg-white p-8 shadow-card">
