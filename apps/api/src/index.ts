@@ -31,7 +31,7 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
   if (err instanceof AppError) {
-    res.status(err.status).json({ error: err.message });
+    res.status(err.status).json({ error: err.message, code: err.code });
     return;
   }
   console.error(err);

@@ -82,5 +82,82 @@
     }
   },
   "footer": { "tagline": "MEILI EXPRESS — fast delivery, safe at every stage", "copyright": "© 2026 MEILI EXPRESS" },
-  "common": { "loading": "Loading...", "error": "Something went wrong, please try again", "empty": "Nothing here yet" }
+  "common": { "loading": "Loading...", "error": "Something went wrong, please try again", "empty": "Nothing here yet" },
+  "app": {
+    "zoneBadge": "CUSTOMER ZONE",
+    "nav": { "dashboard": "My dashboard", "points": "Points", "referral": "Referrals", "invoices": "My invoices", "tracking": "Tracking", "profile": "Profile" },
+    "errors": {
+      "phone_taken": "This phone number already has an account — log in instead",
+      "phone_not_found": "No account found for this phone number",
+      "account_suspended": "This account has been suspended",
+      "invalid_credentials": "Incorrect phone number or password",
+      "no_password_set": "You haven't set a password yet",
+      "wrong_old_password": "Current password is incorrect",
+      "otp_expired": "That OTP is incorrect or has expired — request a new one",
+      "otp_too_many_attempts": "Too many incorrect OTP attempts — request a new one",
+      "otp_invalid": "Incorrect OTP code",
+      "invalid_referral_code": "Invalid referral code",
+      "invoice_not_found": "Invoice not found",
+      "redeem_wrong_status": "Points can only be redeemed on an invoice that's priced and not yet paid",
+      "invoice_no_price": "This invoice doesn't have a price yet",
+      "already_redeemed": "Points have already been redeemed on this invoice",
+      "redeem_over_cap": "That's above the maximum redeemable points",
+      "insufficient_points": "Not enough points",
+      "parcel_not_found": "Parcel not found",
+      "generic": "Something went wrong, please try again"
+    },
+    "auth": {
+      "register": { "title": "Create an account", "sub": "Register with your phone number and confirm with an OTP code.", "submit": "Create account", "done": "Account created." },
+      "login": { "title": "Log in", "sub": "Enter your phone number, then a password or OTP.", "submit": "Log in", "done": "Logged in." },
+      "forgot": { "title": "Forgot password", "sub": "Enter your phone number and we will send an OTP code.", "submit": "Send OTP", "done": "Check your phone for the OTP code." },
+      "reset": { "title": "Set a new password", "sub": "Set a new password after the OTP is confirmed.", "submit": "Save password", "done": "New password saved." },
+      "fields": {
+        "name": "Full name", "phone": "Phone number", "otp": "6-digit OTP code", "pass": "Password",
+        "ref": "Referral code (optional)", "newPass": "New password", "newPass2": "Confirm new password", "oldPass": "Current password", "newPhone": "New phone number"
+      },
+      "sendOtp": "Send OTP", "otpSentMsg": "An OTP code has been sent to your phone number.",
+      "haveAccount": "Already have an account?", "noAccount": "No account yet?", "forgotLink": "Forgot your password?", "backToLogin": "Back to log in",
+      "loginWithPassword": "Log in with password", "loginWithOtp": "Log in with OTP instead",
+      "setPasswordTitle": "Set a password (optional)",
+      "setPasswordBody": "Set a password so you can log in faster next time without waiting for an OTP — OTP always still works.",
+      "setPasswordCta": "Set password", "skipForNow": "Skip for now"
+    },
+    "dashboard": {
+      "title": "My dashboard", "sub": "Points summary, recent invoices and parcels in transit",
+      "kPtsAvail": "AVAILABLE POINTS", "kPtsLocked": "LOCKED POINTS", "kPtsValue": "POINT VALUE",
+      "ptsAvailNote": "Redeem up to 15% of an invoice", "ptsLockedNote": "Unlocked after shipping 5 kg", "ptsValueNote": "1 point = 100 ₭ · reset every 31 December",
+      "recentBills": "Recent invoices", "viewAll": "View all →", "inTransit": "Parcel in transit", "trackCta": "View details", "noActiveParcel": "No parcel in transit right now",
+      "colBill": "Invoice", "colDate": "Date", "colWeight": "Weight", "colAmount": "Amount", "colPay": "Payment",
+      "payWait": "Awaiting payment", "payPaid": "Paid"
+    },
+    "points": {
+      "title": "Reward points", "sub": "Available points, locked points and point history",
+      "rules": "1 kg (19,000 ₭) = 1 point · minimum 3 kg to earn points · 1 point = 100 ₭ · redeem up to 15% of an invoice · points reset every 31 December",
+      "history": "Point history", "colDetail": "Detail", "colPts": "Points", "expiresLabel": "Points expire",
+      "source": { "transport": "From a shipment", "referral": "From a referral", "redemption": "Redeemed for a discount", "expiry_reset": "Annual reset" }
+    },
+    "referral": {
+      "title": "Refer a friend", "sub": "Share your referral code and follow your friends' status",
+      "myCode": "MY REFERRAL CODE", "copy": "Copy", "copied": "Copied",
+      "rule": "The referrer gets 50 points immediately · the new customer gets 20 points, locked until they have shipped 5 kg in total.",
+      "friends": "Friends referred", "statusLocked": "Locked", "statusUnlocked": "Unlocked", "statusPending": "Locked",
+      "colFriend": "Friend", "colDate": "Date", "colStatus": "Status", "colEarn": "Points earned", "empty": "No referrals yet"
+    },
+    "invoices": { "title": "My invoices", "sub": "All invoices with payment status", "filters": ["All", "Awaiting payment", "Paid"] },
+    "invoiceDetail": {
+      "title": "Invoice detail", "sub": "Cargo lines, pricing and point redemption",
+      "backToBills": "← Back to invoices", "itemsLabel": "Cargo lines",
+      "useTitle": "Redeem points for a discount", "useHint": "1 point = 100 ₭ · up to 15% of the invoice",
+      "ptsUse": "Points to use", "subtotal": "Subtotal", "discount": "Point discount", "total": "Amount due",
+      "apply": "Confirm redemption", "applied": "Redemption confirmed.", "alreadyRedeemed": "Points have already been redeemed on this invoice",
+      "maxPts": "Maximum usable", "payChannels": "PAYMENT CHANNELS", "awaiting": "Awaiting real content from the client", "noPrice": "Not priced yet"
+    },
+    "tracking": { "title": "My shipment tracking", "sub": "The 7 statuses for each invoice's parcel", "pickParcel": "Pick an invoice", "empty": "No parcels yet" },
+    "profile": {
+      "title": "Profile", "sub": "Edit your details, change your phone number and password",
+      "personal": "Personal details", "save": "Save", "saved": "Saved", "savePass": "Save password",
+      "changePass": "Change password", "newPhoneHint": "Confirmed with an OTP code sent to the new number.", "logout": "Log out",
+      "notSetYet": "No password set yet — you can set one here"
+    }
+  }
 }

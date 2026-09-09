@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { normalizePhone } from "@meili/shared";
 import type { ShipmentStatus } from "../generated/prisma/enums.js";
+import { getConfigNumber } from "../lib/config.js";
 import { AppError } from "../lib/errors.js";
 import { asyncHandler } from "../lib/http.js";
 import { requireCustomerAuth } from "../middleware/auth.js";
@@ -132,15 +133,25 @@ customerRouter.get(
   "/invoices/:id",
   asyncHandler(async (req, res) => {
     const shipment = await prisma.shipment.findUnique({ where: { id: req.params.id } });
-    if (!shipment || shipment.userId !== req.userId) throw new AppError(404, "ไม่พบบิลนี้");
+    if (!shipment || shipment.userId !== req.userId) throw new AppError(404, "ไม่พบบิลนี้", "invoice_not_found");
 
     const redemption = await prisma.pointsLedger.findFirst({ where: { shipmentId: shipment.id, source: "redemption" } });
+    const [discountCapPct, pointValue, balance] = await Promise.all([
+      getConfigNumber("discount_cap_pct"),
+      getConfigNumber("point_value"),
+      pointsBalance(req.userId!),
+    ]);
+    const maxByCap = shipment.price !== null ? Math.floor((Number(shipment.price) * discountCapPct) / pointValue) : 0;
 
     res.json({
       ...shipmentSummary(shipment),
       origin: shipment.origin,
       destination: shipment.destination,
       pointsRedeemed: redemption ? -redemption.delta : 0,
+      redeemable: !redemption && shipment.status === "priced_awaiting_payment",
+      pointValue,
+      maxRedeemablePoints: Math.min(maxByCap, balance.unlocked),
+      availablePoints: balance.unlocked,
     });
   }),
 );
@@ -187,7 +198,7 @@ customerRouter.get(
       where: { billNumber: req.params.billNumber.trim().toUpperCase() },
       include: { trackingHistory: { orderBy: { changedAt: "asc" } } },
     });
-    if (!shipment || shipment.userId !== req.userId) throw new AppError(404, "ไม่พบพัสดุนี้");
+    if (!shipment || shipment.userId !== req.userId) throw new AppError(404, "ไม่พบพัสดุนี้", "parcel_not_found");
 
     res.json({
       ...shipmentSummary(shipment),
@@ -220,7 +231,7 @@ customerRouter.post(
     const body = z.object({ newPhone: z.string().min(8).transform(normalizePhone), otp: z.string().length(6) }).parse(req.body);
 
     const existing = await prisma.user.findUnique({ where: { phone: body.newPhone } });
-    if (existing) throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว");
+    if (existing) throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว", "phone_taken");
 
     await verifyOtp(body.newPhone, body.otp, "change_phone", { consume: true });
 

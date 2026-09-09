@@ -36,10 +36,10 @@ customerAuthRouter.post(
     // change_phone sends the OTP to a brand-new number, same existence rule
     // as register: it must not already belong to another account.
     if ((body.purpose === "register" || body.purpose === "change_phone") && existing) {
-      throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
+      throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน", "phone_taken");
     }
     if ((body.purpose === "login" || body.purpose === "reset_password") && !existing) {
-      throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้");
+      throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้", "phone_not_found");
     }
 
     const { devCode } = await generateAndSendOtp(body.phone, body.purpose);
@@ -73,7 +73,7 @@ customerAuthRouter.post(
       .parse(req.body);
 
     const existing = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (existing) throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
+    if (existing) throw new AppError(409, "เบอร์นี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน", "phone_taken");
 
     await verifyOtp(body.phone, body.otp, "register", { consume: true });
 
@@ -83,7 +83,7 @@ customerAuthRouter.post(
         where: { accountId: body.referralCode },
         select: { id: true, phone: true },
       });
-      if (!referrer) throw new AppError(400, "รหัสแนะนำไม่ถูกต้อง");
+      if (!referrer) throw new AppError(400, "รหัสแนะนำไม่ถูกต้อง", "invalid_referral_code");
       await assertNotSelfReferral(referrer.phone, body.phone);
     }
 
@@ -121,8 +121,8 @@ customerAuthRouter.post(
     const body = z.object({ phone: phoneSchema, otp: z.string().length(6) }).parse(req.body);
 
     const user = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้");
-    if (user.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน");
+    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้", "phone_not_found");
+    if (user.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน", "account_suspended");
 
     await verifyOtp(body.phone, body.otp, "login", { consume: true });
     await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
@@ -142,11 +142,11 @@ customerAuthRouter.post(
     const body = z.object({ phone: phoneSchema, password: z.string().min(1) }).parse(req.body);
 
     const user = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (!user || !user.passwordHash) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง");
-    if (user.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน");
+    if (!user || !user.passwordHash) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง", "invalid_credentials");
+    if (user.status !== "active") throw new AppError(403, "บัญชีนี้ถูกระงับการใช้งาน", "account_suspended");
 
     const ok = await comparePassword(body.password, user.passwordHash);
-    if (!ok) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง");
+    if (!ok) throw new AppError(401, "เบอร์หรือรหัสผ่านไม่ถูกต้อง", "invalid_credentials");
 
     await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
 
@@ -176,10 +176,10 @@ customerAuthRouter.post(
   asyncHandler(async (req, res) => {
     const body = z.object({ oldPassword: z.string(), newPassword: z.string().min(6) }).parse(req.body);
     const user = await prisma.user.findUniqueOrThrow({ where: { id: req.userId! } });
-    if (!user.passwordHash) throw new AppError(400, "ยังไม่ได้ตั้งรหัสผ่าน กรุณาใช้ set-password ก่อน");
+    if (!user.passwordHash) throw new AppError(400, "ยังไม่ได้ตั้งรหัสผ่าน กรุณาใช้ set-password ก่อน", "no_password_set");
 
     const ok = await comparePassword(body.oldPassword, user.passwordHash);
-    if (!ok) throw new AppError(401, "รหัสผ่านเดิมไม่ถูกต้อง");
+    if (!ok) throw new AppError(401, "รหัสผ่านเดิมไม่ถูกต้อง", "wrong_old_password");
 
     const passwordHash = await hashPassword(body.newPassword);
     await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
@@ -193,7 +193,7 @@ customerAuthRouter.post(
   asyncHandler(async (req, res) => {
     const body = z.object({ phone: phoneSchema }).parse(req.body);
     const user = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้");
+    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้", "phone_not_found");
 
     const { devCode } = await generateAndSendOtp(body.phone, "reset_password");
     res.json({ ok: true, ...(devCode ? { devCode } : {}) });
@@ -209,7 +209,7 @@ customerAuthRouter.post(
       .parse(req.body);
 
     const user = await prisma.user.findUnique({ where: { phone: body.phone } });
-    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้");
+    if (!user) throw new AppError(404, "ไม่พบบัญชีที่ใช้เบอร์นี้", "phone_not_found");
 
     await verifyOtp(body.phone, body.otp, "reset_password", { consume: true });
 

@@ -82,5 +82,82 @@
     }
   },
   "footer": { "tagline": "美丽快运 · 快速送达 全程安全", "copyright": "© 2026 MEILI EXPRESS" },
-  "common": { "loading": "正在加载...", "error": "发生错误，请重试", "empty": "暂无数据" }
+  "common": { "loading": "正在加载...", "error": "发生错误，请重试", "empty": "暂无数据" },
+  "app": {
+    "zoneBadge": "客户专区",
+    "nav": { "dashboard": "我的首页", "points": "积分", "referral": "推荐好友", "invoices": "我的账单", "tracking": "包裹追踪", "profile": "个人资料" },
+    "errors": {
+      "phone_taken": "该手机号已有账号，请直接登录",
+      "phone_not_found": "未找到使用该手机号的账号",
+      "account_suspended": "该账号已被暂停使用",
+      "invalid_credentials": "手机号或密码不正确",
+      "no_password_set": "尚未设置密码",
+      "wrong_old_password": "原密码不正确",
+      "otp_expired": "验证码不正确或已过期，请重新获取",
+      "otp_too_many_attempts": "验证码输入错误次数过多，请重新获取",
+      "otp_invalid": "验证码不正确",
+      "invalid_referral_code": "推荐码不正确",
+      "invoice_not_found": "未找到该账单",
+      "redeem_wrong_status": "仅可在账单已计价且尚未付款时使用积分抵扣",
+      "invoice_no_price": "该账单尚未计价",
+      "already_redeemed": "该账单已使用过积分抵扣",
+      "redeem_over_cap": "超出可抵扣积分上限",
+      "insufficient_points": "积分不足",
+      "parcel_not_found": "未找到该包裹",
+      "generic": "发生错误，请重试"
+    },
+    "auth": {
+      "register": { "title": "注册", "sub": "使用手机号码注册，并通过验证码确认。", "submit": "注册", "done": "注册成功。" },
+      "login": { "title": "登录", "sub": "输入手机号码，使用密码或验证码登录。", "submit": "登录", "done": "已登录。" },
+      "forgot": { "title": "忘记密码", "sub": "输入手机号码，我们会发送验证码。", "submit": "发送验证码", "done": "请查看手机接收验证码。" },
+      "reset": { "title": "设置新密码", "sub": "验证码确认后设置新密码。", "submit": "保存密码", "done": "新密码已保存。" },
+      "fields": {
+        "name": "姓名", "phone": "手机号码", "otp": "6 位验证码", "pass": "密码",
+        "ref": "推荐码（选填）", "newPass": "新密码", "newPass2": "确认新密码", "oldPass": "原密码", "newPhone": "新手机号码"
+      },
+      "sendOtp": "发送验证码", "otpSentMsg": "验证码已发送至您的手机号码。",
+      "haveAccount": "已有账号？", "noAccount": "还没有账号？", "forgotLink": "忘记密码？", "backToLogin": "返回登录",
+      "loginWithPassword": "使用密码登录", "loginWithOtp": "改用验证码登录",
+      "setPasswordTitle": "设置密码（选填）",
+      "setPasswordBody": "设置密码后，下次登录无需等待验证码即可更快登录 — 验证码登录方式始终可用。",
+      "setPasswordCta": "设置密码", "skipForNow": "暂时跳过"
+    },
+    "dashboard": {
+      "title": "我的首页", "sub": "积分概览、最近账单与在途包裹",
+      "kPtsAvail": "可用积分", "kPtsLocked": "锁定积分", "kPtsValue": "积分价值",
+      "ptsAvailNote": "最高抵扣单票 15%", "ptsLockedNote": "累计发货满 5 公斤后解锁", "ptsValueNote": "1 积分 = 100 ₭ · 每年 12 月 31 日清零",
+      "recentBills": "最近账单", "viewAll": "查看全部 →", "inTransit": "在途包裹", "trackCta": "查看详情", "noActiveParcel": "暂无在途包裹",
+      "colBill": "账单号", "colDate": "日期", "colWeight": "重量", "colAmount": "金额", "colPay": "付款状态",
+      "payWait": "待付款", "payPaid": "已付款"
+    },
+    "points": {
+      "title": "积分", "sub": "可用积分、锁定积分与积分明细",
+      "rules": "1 公斤（19,000 ₭）= 1 积分 · 满 3 公斤起算 · 1 积分 = 100 ₭ · 最高抵扣单票 15% · 每年 12 月 31 日清零",
+      "history": "积分明细", "colDetail": "明细", "colPts": "积分", "expiresLabel": "积分到期日",
+      "source": { "transport": "来自发货", "referral": "来自推荐好友", "redemption": "积分抵扣", "expiry_reset": "年度清零" }
+    },
+    "referral": {
+      "title": "推荐好友", "sub": "分享您的推荐码并查看好友状态",
+      "myCode": "我的推荐码", "copy": "复制", "copied": "已复制",
+      "rule": "推荐人立得 50 积分 · 被推荐人得 20 积分，累计发货满 5 公斤后解锁。",
+      "friends": "已推荐好友", "statusLocked": "锁定中", "statusUnlocked": "已解锁", "statusPending": "锁定中",
+      "colFriend": "推荐好友", "colDate": "日期", "colStatus": "状态", "colEarn": "获得积分", "empty": "尚未推荐好友"
+    },
+    "invoices": { "title": "我的账单", "sub": "全部账单及付款状态", "filters": ["全部", "待付款", "已付款"] },
+    "invoiceDetail": {
+      "title": "账单详情", "sub": "货物明细、价格与积分抵扣",
+      "backToBills": "← 返回账单列表", "itemsLabel": "货物明细",
+      "useTitle": "使用积分抵扣", "useHint": "1 积分 = 100 ₭ · 最高抵扣单票 15%",
+      "ptsUse": "使用积分", "subtotal": "抵扣前金额", "discount": "积分抵扣", "total": "应付金额",
+      "apply": "确认使用积分", "applied": "已确认使用积分。", "alreadyRedeemed": "该账单已使用过积分抵扣",
+      "maxPts": "最多可用", "payChannels": "付款方式", "awaiting": "等待客户提供实际内容", "noPrice": "尚未计价"
+    },
+    "tracking": { "title": "我的包裹追踪", "sub": "每张账单包裹的 7 个状态", "pickParcel": "选择账单", "empty": "暂无包裹" },
+    "profile": {
+      "title": "个人资料", "sub": "修改资料、更换手机号码与密码",
+      "personal": "个人资料", "save": "保存", "saved": "已保存", "savePass": "保存密码",
+      "changePass": "修改密码", "newPhoneHint": "通过发送到新号码的验证码确认。", "logout": "退出登录",
+      "notSetYet": "尚未设置密码 — 可在此设置"
+    }
+  }
 }

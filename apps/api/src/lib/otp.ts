@@ -46,16 +46,16 @@ export async function verifyOtp(
   });
 
   if (!otp) {
-    throw new AppError(400, "OTP ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาขอรหัสใหม่");
+    throw new AppError(400, "OTP ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาขอรหัสใหม่", "otp_expired");
   }
   if (otp.attempts >= OTP_MAX_ATTEMPTS) {
-    throw new AppError(429, "กรอกรหัส OTP ผิดหลายครั้งเกินไป กรุณาขอรหัสใหม่");
+    throw new AppError(429, "กรอกรหัส OTP ผิดหลายครั้งเกินไป กรุณาขอรหัสใหม่", "otp_too_many_attempts");
   }
 
   const ok = await comparePassword(code, otp.codeHash);
   if (!ok) {
     await prisma.otp.update({ where: { id: otp.id }, data: { attempts: { increment: 1 } } });
-    throw new AppError(400, "รหัส OTP ไม่ถูกต้อง");
+    throw new AppError(400, "รหัส OTP ไม่ถูกต้อง", "otp_invalid");
   }
 
   if (opts.consume) {

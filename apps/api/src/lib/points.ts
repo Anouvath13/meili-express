@@ -29,16 +29,16 @@ export async function redeemPointsForShipment(userId: string, shipmentId: string
   if (pointsToUse <= 0) throw new AppError(400, "จำนวนแต้มต้องมากกว่า 0");
 
   const shipment = await prisma.shipment.findUnique({ where: { id: shipmentId } });
-  if (!shipment || shipment.userId !== userId) throw new AppError(404, "ไม่พบบิลนี้");
+  if (!shipment || shipment.userId !== userId) throw new AppError(404, "ไม่พบบิลนี้", "invoice_not_found");
   if (shipment.status !== "priced_awaiting_payment") {
-    throw new AppError(400, "แลกแต้มได้เฉพาะบิลที่คิดราคาแล้วและยังไม่ได้ชำระเงิน");
+    throw new AppError(400, "แลกแต้มได้เฉพาะบิลที่คิดราคาแล้วและยังไม่ได้ชำระเงิน", "redeem_wrong_status");
   }
-  if (shipment.price === null) throw new AppError(400, "บิลนี้ยังไม่มีราคา");
+  if (shipment.price === null) throw new AppError(400, "บิลนี้ยังไม่มีราคา", "invoice_no_price");
 
   const alreadyRedeemed = await prisma.pointsLedger.findFirst({
     where: { shipmentId, source: "redemption" },
   });
-  if (alreadyRedeemed) throw new AppError(409, "แลกแต้มสำหรับบิลนี้ไปแล้ว");
+  if (alreadyRedeemed) throw new AppError(409, "แลกแต้มสำหรับบิลนี้ไปแล้ว", "already_redeemed");
 
   const [discountCapPct, pointValue] = await Promise.all([
     getConfigNumber("discount_cap_pct"),
@@ -49,12 +49,12 @@ export async function redeemPointsForShipment(userId: string, shipmentId: string
   const maxDiscount = price * discountCapPct;
   const maxPoints = Math.floor(maxDiscount / pointValue);
   if (pointsToUse > maxPoints) {
-    throw new AppError(400, `แลกแต้มได้สูงสุด ${maxPoints} แต้ม (เพดาน ${Math.round(discountCapPct * 100)}% ของบิล)`);
+    throw new AppError(400, `แลกแต้มได้สูงสุด ${maxPoints} แต้ม (เพดาน ${Math.round(discountCapPct * 100)}% ของบิล)`, "redeem_over_cap");
   }
 
   const balance = await pointsBalance(userId);
   if (pointsToUse > balance.unlocked) {
-    throw new AppError(400, "แต้มไม่พอ");
+    throw new AppError(400, "แต้มไม่พอ", "insufficient_points");
   }
 
   await prisma.pointsLedger.create({

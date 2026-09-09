@@ -45,7 +45,7 @@ export default function HomePage() {
             <div className="mt-1 text-[19px] font-bold leading-[1.55] tracking-tight text-ink-900 sm:text-[21px]">{t('points.title')}</div>
             <div className="mt-2 text-[14.5px] leading-[1.75] text-ink-500">{t('points.body')}</div>
           </div>
-          <GradientButton to="/tracking" className="w-full whitespace-nowrap px-7 py-4 text-[15px] sm:w-auto">
+          <GradientButton to="/app/points" className="w-full whitespace-nowrap px-7 py-4 text-[15px] sm:w-auto">
             {t('points.cta')}
           </GradientButton>
         </div>
